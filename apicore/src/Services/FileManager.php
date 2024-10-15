@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\General;
+namespace App\Services;
 
 /***
  * Servicio para facilitar el trabajo con el sistema de archivos y acceso

@@ -1,5 +1,5 @@
 <?php
-namespace App\Services\General;
+namespace App\Services;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ConfigurationParameter;

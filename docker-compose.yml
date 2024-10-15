@@ -11,8 +11,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root-password
       MYSQL_DATABASE: apicore
-      MYSQL_USER: sfapp_user
-      MYSQL_PASSWORD: sfapp_password
+      MYSQL_USER: apicore_user
+      MYSQL_PASSWORD: apicore_password
     volumes:
       - ./docker/mysql/data:/var/lib/mysql
     ports:
@@ -30,6 +30,7 @@ services:
   php:
     build:
       context: ./docker/php
+    image: apicore_php:1.0
     container_name: server-php
     restart: unless-stopped
     volumes:
