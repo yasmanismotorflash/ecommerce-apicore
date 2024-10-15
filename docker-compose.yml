@@ -7,33 +7,34 @@ services:
   mysql:
     image: mysql:9
     container_name: server-database
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root-password
-      MYSQL_DATABASE: sfapp
+      MYSQL_DATABASE: apicore
       MYSQL_USER: sfapp_user
       MYSQL_PASSWORD: sfapp_password
     volumes:
-      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/data:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - "3310:3306"
     networks:
       - apicore-net
 
   redis:
     image: redis:alpine
     container_name: server-cache
-    ports:
-      - "6379:6379"
+    restart: unless-stopped
     networks:
       - apicore-net
 
   php:
     build:
-      context: ./php
+      context: ./docker/php
     container_name: server-php
+    restart: unless-stopped
     volumes:
-      - ./sfapp:/var/www/sfapp
-    working_dir: /var/www/sfapp
+      - ./apicore:/var/www/apicore
+    working_dir: /var/www/apicore
     depends_on:
       - mysql
       - redis
@@ -43,15 +44,13 @@ services:
   nginx:
     image: nginx:alpine
     container_name: server-web
+    restart: unless-stopped
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./sfapp:/var/www/sfapp
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./apicore:/var/www/apicore
     depends_on:
       - php
     networks:
       - apicore-net
-
-volumes:
-  mysql_data:
