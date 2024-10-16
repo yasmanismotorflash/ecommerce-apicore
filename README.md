@@ -47,7 +47,11 @@ ejemplo
     http://localhost:8080/api
 
 
+Backend listo !!!
 
+### Credenciasles para autenticacion
+- usuario: admin@apicore.local
+- password: 123
 
 
 
