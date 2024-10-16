@@ -1,6 +1,8 @@
-# Proeyecto Ecommerce API CORE #
+# Proyecto Ecommerce API CORE #
 
-## API central de importación, procesamiento y exportacion de datos entre los   Ecommers y Motorflash ## 
+---------------------------------------------------------------------------------------------
+
+## API central de importación, procesamiento y exportación de datos entre los Ecommers y Motorflash ## 
 
 
 # Como desplegar: 
@@ -16,20 +18,20 @@ ejemplo
     docker-compose up --build 
 
     la primera vez puede demorar porque se descargaran las imagenes y se cotuiran otras
-ya después se puede ejecutar pasándole el parámetro -d para que se quede corriendo en segundo plano.
+    ya después se puede ejecutar pasándole el parámetro -d para que se quede corriendo en segundo plano.
 
 
 ### 4- Entrar al contenedos de php ejecutando el comando
 
-docker exec -it server-php bash
+    docker exec -it server-php bash
 
-### 5- Instalar dependencias ejecutando dentro del contenedor de PHp
+### 5- Instalar dependencias ejecutando dentro del contenedor de PHP
 
-composer install
+    composer install
 
 ### 6-Crear Base de datos (si ya existe omitir este paso)
 
-php bin/console doctrine:database:create
+    php bin/console doctrine:database:create
 
 ### 7-Crear esquema de tablas dentro de la base de datos
 
@@ -37,12 +39,12 @@ php bin/console doctrine:database:create
 
 ### 8-Cargar datos iniciales
 
-php bin/console doctrine:fixtures:load --append
+    php bin/console doctrine:fixtures:load --append
 
 
 ### 9-Acceder vía un navegador a localhost:8080
 
-http://localhost:8080/api
+    http://localhost:8080/api
 
 
 
