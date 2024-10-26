@@ -1,8 +1,8 @@
 <?php
-namespace App\Services;
+namespace App\Services\Comun;
 
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ConfigurationParameter;
+use Doctrine\ORM\EntityManagerInterface;
 
 /***
  * Servicio para gestionar parámetros de configuración almacenados en base de datos
@@ -51,7 +51,6 @@ class Configuration
             if($parameter->getType()!==$parameterType || $parameter->getValueStr()!==$parameterValue)
                 $this->updateParameter($parameterName, $parameterType, $parameterValue);
         }
-
         return $this;
     }
 
@@ -64,7 +63,6 @@ class Configuration
 
         if ($this->debug)
             $this->log->info('Pedido parámetro: [nombre:' . $parameterName.'], Encontrado :'.(($parameter)?'si':'no').'Valor:'.(($parameter)?$parameter->getValueStr():'nulo').']');
-
 
         if(!$parameter)
             return null;
@@ -107,6 +105,7 @@ class Configuration
     {
         return $this->debug;
     }
+
 
     /**
      * @param bool $debug

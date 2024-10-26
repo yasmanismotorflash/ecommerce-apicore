@@ -1,11 +1,10 @@
 <?php
-namespace App\Services;
+namespace App\Services\Comun;
 
-use App\Services\MfServices;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 /***
  * Servicio para facilitar el trabajo con el envio de correo electronicos de forma simple,

@@ -1,6 +1,5 @@
 <?php
-
-namespace App\Services;
+namespace App\Services\Comun;
 
 /***
  * Servicio para facilitar el trabajo con el sistema de archivos y acceso
@@ -16,11 +15,14 @@ class FileManager
         return dirname(__DIR__, 3) . DIRECTORY_SEPARATOR;
     }
 
-    //Obtener la ruta completa a el directorio logs
+
+
+    //Obtener la ruta completa al directorio logs
     public function getAppLogsDirectory(): string
     {
         return $this->getAppPath() . $this->fixPathToOS('var/log/');
     }
+
 
     //Obtener la ruta completa a el directorio data
     public function getAppDataDirectory(): string
@@ -28,17 +30,20 @@ class FileManager
         return $this->getAppPath() . $this->fixPathToOS('data/');
     }
 
+
     //Obtener la ruta completa a el directorio downloads
     public function getDownloadsDirectory(): string
     {
         return $this->getAppPath() . $this->fixPathToOS('data/downloads/');
     }
 
-    //Obtener la ruta completa a el directorio de bloqueos
+
+    //Obtener la ruta completa al directorio de bloqueos
     public function getRunLockDirectory(): string
     {
         return $this->getAppPath() . $this->fixPathToOS('data/run-lock/');
     }
+
 
     //Obtener la ruta completa a el directorio publico
     public function getAppPublicDirectory(): string
@@ -47,7 +52,7 @@ class FileManager
     }
 
 
-    //Ajustar un ruta pasada por parametros para que sea correcta para el sistema operativo
+    //Ajustar una ruta pasada por parámetros para que sea correcta para el sistema operativo
     public function fixPathToOS(string $path): string
     {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
@@ -55,6 +60,7 @@ class FileManager
         else
             return str_replace("\\", "/", $path);
     }
+
 
 
     public function copyFile(string $source, string $target): bool
@@ -72,6 +78,7 @@ class FileManager
             return false;
         }
     }
+
 
 
     public function copyDirectory(string $source, string $target): bool
@@ -110,6 +117,7 @@ class FileManager
     }
 
 
+
     public function moveFile(string $source, string $target): bool
     {
         try {
@@ -125,6 +133,7 @@ class FileManager
             return false;
         }
     }
+
 
 
     public function moveDirectory(string $source, string $target): bool
@@ -144,6 +153,7 @@ class FileManager
     }
 
 
+
     public function deleteFile(string $source): bool
     {
         try {
@@ -159,6 +169,7 @@ class FileManager
             return false;
         }
     }
+
 
 
     //Eliminar recursivamente un directorio.
@@ -193,6 +204,7 @@ class FileManager
             return false;
         }
     }
+
 
 
     //Extrar el contenido de un archivo compactado en un directorio especificado.
@@ -265,11 +277,13 @@ class FileManager
         //pendiente
     }
 
+
     //crear un archivo zip con un directorio como fuente usando la extension php-zip
     public function createZipFileFormDirectory(string $directory, string $outputFile, bool $showProgress = false, $output = null): void
     {
         // pendiente
     }
+
 
     public function createDirectory(string $baseDirectory):void
     {
@@ -280,6 +294,5 @@ class FileManager
             }
         }
     }
-
 
 }
