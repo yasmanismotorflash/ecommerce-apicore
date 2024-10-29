@@ -2,12 +2,18 @@
 namespace App\DataFixtures;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\User;
 
 
-class UsersFixtures extends Fixture
+class UsersFixtures extends Fixture implements OrderedFixtureInterface
 {
+    public function getOrder()
+    {
+        return 2;
+    }
+
     public function load(ObjectManager $manager): void
     {
 

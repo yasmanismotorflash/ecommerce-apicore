@@ -1,12 +1,15 @@
 <?php
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ConfigurationParameterRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ConfigurationParameterRepository::class)]
 #[ORM\Table(name: "configuration_parameter")]
 #[ORM\Index(columns: ["name"], name: "idx_nombre_paramt_config")]
+#[ApiResource]
+
 class ConfigurationParameter
 {
     #[ORM\Id]

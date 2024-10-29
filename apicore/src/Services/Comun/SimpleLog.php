@@ -33,7 +33,7 @@ class SimpleLog
 
     public function __construct()
     {
-        $this->location = dirname(__DIR__,2).'/var/log/';
+        $this->location = dirname(__DIR__,3).'/var/log/';
         $this->logFile = 'default';
         $this->dateOnName = true;
     }
@@ -56,10 +56,6 @@ class SimpleLog
         if ($defaultLocation)
         {
             $this->location = dirname(__DIR__, 3) . '/var/log/';
-
-            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                $this->location = dirname(__DIR__, 3) . '\var\log\\';
-            }
 
             if (!file_exists($this->location)) {
                 if (!mkdir($this->location, 0777, true) && !is_dir($this->location)) {

@@ -3,6 +3,7 @@ namespace App\Services\Comun;
 
 use App\Entity\ConfigurationParameter;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Services\Comun\SimpleLog;
 
 /***
  * Servicio para gestionar parámetros de configuración almacenados en base de datos
@@ -14,7 +15,7 @@ class Configuration
     private SimpleLog $log;
     private EntityManagerInterface $entityManager;
 
-    private bool $debug = false;
+    private bool $debug = true;
 
 
     public function __construct(SimpleLog $log,EntityManagerInterface $entityManager)
@@ -24,10 +25,10 @@ class Configuration
     }
 
 
-    public function configure($debug, string $logname = 'config-service'):Configuration
+    public function configure(string $logname = 'config-service'):Configuration
     {
-        $this->debug = $debug;
-        if ($debug)
+        $this->debug = boolval($_ENV['APP_DEBUG']);
+        if ($this->debug)
             $this->log->configure(true,$logname,true);
         return $this;
     }
@@ -62,7 +63,7 @@ class Configuration
         $parameter = $repositorio->findOneByName($parameterName);
 
         if ($this->debug)
-            $this->log->info('Pedido parámetro: [nombre:' . $parameterName.'], Encontrado :'.(($parameter)?'si':'no').'Valor:'.(($parameter)?$parameter->getValueStr():'nulo').']');
+            $this->log->info('Pedido parámetro: [nombre: '.$parameterName.'], Encontrado :'.(($parameter)?'si':'no').', Valor:'.(($parameter)?$parameter->getValueStr():'nulo').']');
 
         if(!$parameter)
             return null;
@@ -93,7 +94,6 @@ class Configuration
                 if ($this->debug)
                     $this->log->info('Actualizado parámetro: [nombre:' . $parameterName.', tipo:'.$parameterType.', valor:'.$parameterValue.']');
             }
-
         }
         return $this;
     }

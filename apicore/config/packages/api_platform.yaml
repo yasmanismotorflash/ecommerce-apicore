@@ -1,5 +1,5 @@
 api_platform:
-    title: Hello from API CORE
+    title: API CORE
     version: 1.0.0
     defaults:
         stateless: true
