@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\MFServices;
+namespace App\Services\Import\Motorflash\APIMF;
 use App\Services\Comun\Configuration;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 

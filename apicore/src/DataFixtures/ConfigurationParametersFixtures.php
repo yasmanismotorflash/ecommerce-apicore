@@ -17,6 +17,7 @@ class ConfigurationParametersFixtures extends Fixture implements OrderedFixtureI
     public function load(ObjectManager $manager): void
     {
 
+        //TODO: definir donde se almacenaran las credenciales para importar datos iniciales, y que no se suban al repositorio.
         //---Crear usuarios----------------------------------------------------------------------------
         $parameters = [
             //---APIMF-CONFIGURACION
