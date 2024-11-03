@@ -28,7 +28,7 @@ class  DealerBuilder implements BuilderInterface
         return null;
     }
 
-    static function buildFromArray(array $data): ?object {
+    static function buildFromArray(array $data): ?Dealer {
         if( DealerBuilder::validateArray($data)) {
             $entity = new Dealer();
             return $entity->setMfid($data['id'])

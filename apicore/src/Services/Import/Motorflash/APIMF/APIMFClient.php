@@ -161,6 +161,17 @@ class APIMFClient
         return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
     }
 
+    /**
+     * Función para obtener una lista de anuncios especificando datos de paginado
+     * @param string $perPage cantidad por pagina
+     * @param string $page pagina solicitada
+     * @return string (json)
+     */
+    public function getAdsByPage(int $perPage = 40, int $page = 1): ?string {
+        $endpoint = $this->apiMfUrl.'/api/advertisements?perPage='.$perPage.'&page='.$page;
+        return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
+    }
+
 
 
     public function dumpConfig(): void

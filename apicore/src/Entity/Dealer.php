@@ -5,7 +5,7 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'dealer')]
+#[ORM\Table(name: 'dealers')]
 #[ApiResource]
 class Dealer
 {

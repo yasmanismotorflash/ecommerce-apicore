@@ -6,6 +6,7 @@ use App\Repository\RolRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RolRepository::class)]
+#[ORM\Table(name: 'roles')]
 class Rol
 {
     #[ORM\Id]

@@ -5,7 +5,7 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'advertisement')]
+#[ORM\Table(name: 'advertisements')]
 #[ApiResource]
 
 class Advertisement
@@ -81,7 +81,7 @@ class Advertisement
     #[ORM\ManyToOne(targetEntity: Dealer::class)]
     private ?Dealer $dealer;
 
-    #[ORM\ManyToOne(targetEntity: Shop::class)]
+    #[ORM\ManyToOne(targetEntity: Shop::class, cascade: ['persist'])]
     private ?Shop $shop;
 
 

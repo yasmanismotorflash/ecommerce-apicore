@@ -6,7 +6,7 @@ use App\Repository\ConfigurationParameterRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ConfigurationParameterRepository::class)]
-#[ORM\Table(name: "configuration_parameter")]
+#[ORM\Table(name: "configuration_parameters")]
 #[ORM\Index(columns: ["name"], name: "idx_nombre_paramt_config")]
 #[ApiResource]
 

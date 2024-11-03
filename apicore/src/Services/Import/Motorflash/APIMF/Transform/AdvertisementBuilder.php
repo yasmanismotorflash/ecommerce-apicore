@@ -63,8 +63,8 @@ class AdvertisementBuilder implements BuilderInterface
                 ->setTypnatcode($data['typnatcode'])
                 ->setInternalRef($data['internalRef'])
                 ->setOrigen($data['origen'])
-                ->setDealer(DealerBuilder::buildFromJson($data['dealer']))
-                ->setShop(ShopBuilder::buildFromJson($data['shop']))
+                //->setDealer(DealerBuilder::buildFromArray($data['dealer']))
+                //->setShop(ShopBuilder::buildFromArray($data['shop']))
                 ->setStatus($data['status'])
                 ->setTypeVehicle($data['typeVehicle'])
                 ->setBodyType($data['bodyType'])
@@ -73,14 +73,14 @@ class AdvertisementBuilder implements BuilderInterface
                 ->setPrice($data['price'])
                 ->setFinancedPrice($data['financedPrice'])
                 ->setPurchasePrice($data['purchasePrice'])
-                ->setPriceNew($data['priceNew'])
+                //->setPriceNew($data['priceNew'])   parcear a float
                 ->setKm($data['km'])
                 ->setCv($data['cv'])
                 ->setKw($data['kw'])
-                ->setCc($data['cc'])
+                ->setCc((int)($data['cc']))
                 ->setTiresFront($data['tires_front'])
                 ->setTiresBack($data['tires_back'])
-                ->setFuel($data['fuel'])    //ToDo Convertir a una entidad aparte
+                // ->setFuel($data['fuel'])    //ToDo Convertir a una entidad aparte
 
                 ->setColor($data['color'])
                 ->setFreeAccidents($data['freeAccidents'])
