@@ -22,8 +22,6 @@ class ConfigurationParametersFixtures extends Fixture implements OrderedFixtureI
         $parameters = [
             //---APIMF-CONFIGURACION
             ['string', 'API-MF-URL', 'https://apimf.motorflash.com'],
-            ['string', 'API-MF-CLIENT-ID', '-167c6c95eaddec84e555512c342f4b6e50a'],
-            ['string', 'API-MF-CLIENT-SECRET', '0737dd801aee0031a8e874cfb54d9bacdace371ffccc80d598bdba602d7a3dba'],
         ];
 
         foreach ($parameters as $parameter) {

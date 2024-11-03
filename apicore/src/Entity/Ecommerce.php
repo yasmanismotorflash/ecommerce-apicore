@@ -25,6 +25,9 @@ class Ecommerce
     #[ORM\Column(type: 'uuid')]
     private ?Uuid $uuid = null;
 
+    #[ORM\Column]
+    private ?int $mfSiteId = null;
+
     #[ORM\Column(length: 200)]
     private ?string $apimfClientId = null;
 
@@ -37,8 +40,7 @@ class Ecommerce
     #[ORM\Column(length: 200)]
     private ?string $apicoreClientSecret = null;
 
-    #[ORM\Column]
-    private ?int $mfSiteId = null;
+
 
     #[ORM\Column]
     private ?bool $active = null;
