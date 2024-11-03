@@ -38,13 +38,11 @@ class ImportAdsCommand extends Command
 
         $output->writeln('Iniciando ejecución de comando de APIMF Client ...');
 
-        $this->apiMFClient->dumpConfig();
+        //$this->apiMFClient->dumpConfig();
 
         $resp = $this->apiMFClient->getAdsByShop(992);
         $respArray = json_decode($resp,true);
         $ads = $respArray['advertisements'];
-
-        $stock = array();
 
         foreach ( $ads as $ad){
 
@@ -52,13 +50,10 @@ class ImportAdsCommand extends Command
             $shop = ShopBuilder::buildFromArray($ad['shop']);        //  ToDo: Procesar  la tienda, verificar si existe en bd primero sino lo crea
             $images = $ad['images'];                            // ToDo: Procesar la lista de imagenes
             $advertisement = AdvertisementBuilder::buildFromArray($ad);
-
-            $stock[] = $advertisement;
-
             $output->writeln('Obtenido Anuncio: '.$ad['id']." de dealer ".$dealer->getName()." de tienda ".$shop->getName(). " con ".count($images)." imagenes");
         }
 
-        $output->writeln('Procesados '.count($stock).' anuncios !');
+        $output->writeln('Procesados '.count($ads).' anuncios !');
         $output->writeln('Ejecución completada !');
         return Command::SUCCESS;
     }
