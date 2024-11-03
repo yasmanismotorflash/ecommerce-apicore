@@ -1,18 +1,18 @@
 <?php
 namespace App\Command;
 
-use App\Services\Import\Motorflash\APIMF\APIMFClient;
-use App\Services\Import\Motorflash\APIMF\Transform\AdvertisementBuilder;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand(
-    name: 'apicore:import:ads',
-    description: 'Add a short description for your command',
-)]
+use App\Services\Import\Motorflash\APIMF\APIMFClient;
+use App\Services\Import\Motorflash\APIMF\Transform\AdvertisementBuilder;
+use App\Services\Import\Motorflash\APIMF\Transform\DealerBuilder;
+use App\Services\Import\Motorflash\APIMF\Transform\ShopBuilder;
+
+#[AsCommand(name: 'apicore:import:ads', description: 'Importar anuncios de clientes')]
 class ImportAdsCommand extends Command
 {
     private $apiMFClient;
@@ -48,17 +48,14 @@ class ImportAdsCommand extends Command
 
         foreach ( $ads as $ad){
 
-
-            $dealer = Dealer::buildFromArray($ad['dealer']);  // verificar si existe en bd primero sino lo crea
-            $shop = Shop::buildFromArray($ad['shop']);        // verificar si existe en bd primero sino lo crea
-            $images = $ad['images'];        // ToDo: Procesar la lista de imagenes
-
+            $dealer = DealerBuilder::buildFromArray($ad['dealer']);  // ToDo: Procesar el dealer, verificar si existe en bd primero sino lo crea
+            $shop = ShopBuilder::buildFromArray($ad['shop']);        //  ToDo: Procesar  la tienda, verificar si existe en bd primero sino lo crea
+            $images = $ad['images'];                            // ToDo: Procesar la lista de imagenes
             $advertisement = AdvertisementBuilder::buildFromArray($ad);
-
 
             $stock[] = $advertisement;
 
-            $output->writeln('Obtenido Anuncio: '.$ad['id']);
+            $output->writeln('Obtenido Anuncio: '.$ad['id']." de dealer ".$dealer->getName()." de tienda ".$shop->getName(). " con ".count($images)." imagenes");
         }
 
         $output->writeln('Procesados '.count($stock).' anuncios !');
