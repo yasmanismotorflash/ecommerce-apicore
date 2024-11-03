@@ -12,23 +12,34 @@ class AdvertisementBuilder implements BuilderInterface
         $data = json_decode($json, true);
         if (json_last_error() !== JSON_ERROR_NONE)
             return false;
+        return AdvertisementBuilder::validateArray($data);
+    }
+
+    static function validateArray(array $data): bool {
+
         return isset(
             $data['id'], $data['published'], $data['available'],
             $data['name'], $data['make'], $data['model'],
             $data['version'], $data['finish'], $data['vin'],
             $data['plate'],
             //$data['finish'], $data['vin'],
-
-
         );
+
     }
 
 
     public static function buildFromJson(string $json): ?Advertisement {
 
         if( AdvertisementBuilder::validateJson($json)) {
-
             $data = json_decode($json, true);
+            return AdvertisementBuilder::buildFromArray($data);
+        }
+        return null;
+    }
+
+    static function buildFromArray(array $data): ?object  {
+        if( AdvertisementBuilder::validateArray($data)) {
+
             $entity = new Advertisement();
 
             return $entity->setMfid($data['id'])
@@ -80,12 +91,12 @@ class AdvertisementBuilder implements BuilderInterface
                 ->setEnvironmentalBadge($data['environmentalBadge'])
 
                 ->setWarrantyDuration($data['warrantyDuration'])
-                ->set
+                //->set
                 ;
+
         }
         return null;
+
     }
-
-
 
 }

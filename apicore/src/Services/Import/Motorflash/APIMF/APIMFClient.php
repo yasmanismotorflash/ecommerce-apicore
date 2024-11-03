@@ -123,7 +123,7 @@ class APIMFClient
      * @param int $ad_id id de anuncio en motorflash
      * @return string (json)
      */
-    public function getAdsByMfId(int $ad_id): ?string
+    public function getAdByMfId(int $ad_id): ?string
     {
         $endpoint = $this->apiMfUrl.'/api/advertisement?id='.$ad_id;
         return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
@@ -147,6 +147,17 @@ class APIMFClient
      */
     public function getAdByPlate(string $plate): ?string {
         $endpoint = $this->apiMfUrl.'/api/advertisement?plate='.$plate;
+        return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
+    }
+
+
+    /**
+     * Función para obtener una lista de anuncios especificando la tienda
+     * @param string $shopId id de la tienda
+     * @return string (json)
+     */
+    public function getAdsByShop(string $shopId): ?string {
+        $endpoint = $this->apiMfUrl.'/api/advertisements?shop='.$shopId;
         return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
     }
 

@@ -10,15 +10,29 @@ class ShopBuilder implements BuilderInterface
         $data = json_decode($json, true);
         if (json_last_error() !== JSON_ERROR_NONE)
             return false;
+        return ShopBuilder::validateArray($data);
+    }
+
+
+    static function validateArray(array $data): bool {
         return isset($data['id'], $data['user'], $data['name'], $data['address'], $data['cp'], $data['city'],
             $data['provinceId'], $data['province'], $data['country'], $data['phone'], $data['email'], $data['lt'], $data['lng']);
     }
+
 
     public static function buildFromJson(string $json): ?Shop {
 
         if( ShopBuilder::validateJson($json)) {
             $data = json_decode($json, true);
+            return ShopBuilder::buildFromArray($data);
+        }
+        return null;
+    }
 
+
+    static function buildFromArray(array $data): ?object {
+
+        if (ShopBuilder::validateArray($data)){
             $entity = new Shop();
 
             return $entity->setMfid($data['id'])
@@ -35,7 +49,6 @@ class ShopBuilder implements BuilderInterface
                 ->setLt($data['lt'])
                 ->setLng($data['lng']);
         }
-        return null;
-    }
 
+    }
 }
