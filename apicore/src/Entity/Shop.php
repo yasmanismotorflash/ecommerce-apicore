@@ -70,6 +70,17 @@ class Shop
         return $this;
     }
 
+    public function getMfid(): int
+    {
+        return $this->mfid;
+    }
+
+    public function setMfid(int $mfid): Shop
+    {
+        $this->mfid = $mfid;
+        return $this;
+    }
+
     /**
      * @return int
      */

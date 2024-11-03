@@ -5,45 +5,37 @@ use App\Entity\Shop;
 
 class ShopBuilder implements BuilderInterface
 {
-    private $entity;
 
-    private $json = '"shop": {
-            "id": 992,
-            "user": 4757,
-            "name": "Autos Juanjo",
-            "address": "Calle Toledo, Nº 40",
-            "cp": "28981",
-            "city": "PARLA",
-            "provinceId": "M",
-            "province": "Madrid",
-            "country": "ES",
-            "phone": "916991593",
-            "email": "vo@autosjuanjo.es",
-            "lt": "40.23009400",
-            "lng": "-3.77702500"
-        }';
-
-
-    public function __construct() {
-        $this->entity = new Shop();
-    }
-
-
-
-
-
-
-    public function fromJson(string $json): self {
+    public static function  validateJson(string $json): bool {
         $data = json_decode($json, true);
-
-
-
-        $this->entity->setProperty1($data['property1']);
-        // Otros setters
-        return $this;
+        if (json_last_error() !== JSON_ERROR_NONE)
+            return false;
+        return isset($data['id'], $data['user'], $data['name'], $data['address'], $data['cp'], $data['city'],
+            $data['provinceId'], $data['province'], $data['country'], $data['phone'], $data['email'], $data['lt'], $data['lng']);
     }
 
-    public function build(): Shop {
-        return $this->entity;
+    public static function buildFromJson(string $json): ?Shop {
+
+        if( ShopBuilder::validateJson($json)) {
+            $data = json_decode($json, true);
+
+            $entity = new Shop();
+
+            return $entity->setMfid($data['id'])
+                ->setUser($data['user'])
+                ->setName($data['name'])
+                ->setAddress($data['address'])
+                ->setCp($data['cp'])
+                ->setCity($data['city'])
+                ->setProvinceId($data['provinceId'])
+                ->setProvince($data['province'])
+                ->setCountry($data['country'])
+                ->setPhone($data['phone'])
+                ->setEmail($data['email'])
+                ->setLt($data['lt'])
+                ->setLng($data['lng']);
+        }
+        return null;
     }
+
 }

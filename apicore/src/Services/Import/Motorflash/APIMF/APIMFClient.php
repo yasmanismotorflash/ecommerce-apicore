@@ -60,7 +60,7 @@ class APIMFClient
             return true;
         }
 
-        //TODO decodificar token y ver si es válido todavía antes de pedir uno nuevo
+        //ToDo decodificar token y ver si es válido todavía antes de pedir uno nuevo
 
         return false;
     }
