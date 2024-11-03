@@ -22,20 +22,20 @@ class APIMFClient
 
 
 
-    public function __construct(Configuration $config, HttpClientInterface $httpClient, bool $debug = false)
+    public function __construct(Configuration $config, HttpClientInterface $httpClient)
     {
         $config->configure();
         $this->apiMfUrl = $config->getParameter('API-MF-URL')->getValue();
-        $this->apiMfClientId = $config->getParameter('API-MF-CLIENT-ID')->getValue();
-        $this->apiMfClientSecret = $config->getParameter('API-MF-CLIENT-SECRET')->getValue();
+        //$this->apiMfClientId = $config->getParameter('API-MF-CLIENT-ID')->getValue();
+        //$this->apiMfClientSecret = $config->getParameter('API-MF-CLIENT-SECRET')->getValue();
         $this->httpClient = $httpClient;
-        $this->getToken();
+        //$this->getToken();
     }
 
 
     /**
      *  Función para autenticación y obtener token de acceso al APIMF,
-     *  mientras el token sea válido usa el actual, sino pide uno nuevo
+     *  mientras el token sea válido usa el actual, si no pide uno nuevo
      */
     private function getToken(): void
     {
@@ -181,6 +181,28 @@ class APIMFClient
         echo 'APIMF SECRET:'.$this->apiMfClientSecret."\n";
         echo 'APIMF TOKEN (Current): '.$this->token."\n";
     }
+
+    /**
+     * @param string|null $apiMfClientId
+     * @return APIMFClient
+     */
+    public function setApiMfClientId(?string $apiMfClientId): APIMFClient
+    {
+        $this->apiMfClientId = $apiMfClientId;
+        return $this;
+    }
+
+    /**
+     * @param string|null $apiMfClientSecret
+     * @return APIMFClient
+     */
+    public function setApiMfClientSecret(?string $apiMfClientSecret): APIMFClient
+    {
+        $this->apiMfClientSecret = $apiMfClientSecret;
+        return $this;
+    }
+
+
 
 
 }

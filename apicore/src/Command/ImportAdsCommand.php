@@ -15,12 +15,20 @@ use App\Services\Import\Motorflash\APIMF\Transform\ShopBuilder;
 #[AsCommand(name: 'apicore:import:ads', description: 'Importar anuncios de clientes')]
 class ImportAdsCommand extends Command
 {
-    private $apiMFClient;
+    private bool $debug;
+
+    private bool $dryrun;
+
+    private $output;
+
+    private APIMFClient $apiMFClient;
 
 
     public function __construct( APIMFClient $apiMFClient)
     {
         parent::__construct();
+        $this->debug = boolval($_ENV['APP_DEBUG']);
+        $this->dryrun = false;
         $this->apiMFClient = $apiMFClient;
     }
 
@@ -34,7 +42,7 @@ class ImportAdsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $io = new SymfonyStyle($input, $output);
+        //$io = new SymfonyStyle($input, $output);
 
         $output->writeln('Iniciando ejecución de comando de APIMF Client ...');
 
@@ -47,9 +55,9 @@ class ImportAdsCommand extends Command
         foreach ( $ads as $ad){
 
             $dealer = DealerBuilder::buildFromArray($ad['dealer']);  // ToDo: Procesar el dealer, verificar si existe en bd primero sino lo crea
-            $shop = ShopBuilder::buildFromArray($ad['shop']);        //  ToDo: Procesar  la tienda, verificar si existe en bd primero sino lo crea
-            $images = $ad['images'];                            // ToDo: Procesar la lista de imagenes
-            $advertisement = AdvertisementBuilder::buildFromArray($ad);
+            $shop = ShopBuilder::buildFromArray($ad['shop']);        // ToDo: Procesar  la tienda, verificar si existe en bd primero sino lo crea
+            $images = $ad['images'];                                 // ToDo: Procesar la lista de imágenes
+            $advertisement = AdvertisementBuilder::buildFromArray($ad); // ToDo: Procesar el anuncio y persistirlo en bd
 
             $output->writeln('Obtenido Anuncio: '.$ad['id']." Dealer: ".$dealer->getMfid()."  Shop: ".$shop->getMfid(). " Imágenes: ".count($images));
         }
