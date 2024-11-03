@@ -50,7 +50,8 @@ class ImportAdsCommand extends Command
             $shop = ShopBuilder::buildFromArray($ad['shop']);        //  ToDo: Procesar  la tienda, verificar si existe en bd primero sino lo crea
             $images = $ad['images'];                            // ToDo: Procesar la lista de imagenes
             $advertisement = AdvertisementBuilder::buildFromArray($ad);
-            $output->writeln('Obtenido Anuncio: '.$ad['id']." de dealer ".$dealer->getName()." de tienda ".$shop->getName(). " con ".count($images)." imagenes");
+
+            $output->writeln('Obtenido Anuncio: '.$ad['id']." Dealer: ".$dealer->getMfid()."  Shop: ".$shop->getMfid(). " Imágenes: ".count($images));
         }
 
         $output->writeln('Procesados '.count($ads).' anuncios !');
