@@ -32,6 +32,10 @@ class APIMFClient
         //$this->getToken();
     }
 
+    public function authenticate(){
+        $this->getToken();
+    }
+
 
     /**
      *  Función para autenticación y obtener token de acceso al APIMF,

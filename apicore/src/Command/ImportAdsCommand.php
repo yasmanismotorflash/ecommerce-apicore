@@ -44,23 +44,47 @@ class ImportAdsCommand extends Command
     {
         //$io = new SymfonyStyle($input, $output);
 
-        $output->writeln('Iniciando ejecución de comando de APIMF Client ...');
+        $output->writeln('Iniciando ejecución de comando de importación desde APIMF ...');
 
-        //$this->apiMFClient->dumpConfig();
 
-        $resp = $this->apiMFClient->getAdsByShop(992);
-        $respArray = json_decode($resp,true);
-        $ads = $respArray['advertisements'];
+        //Obtener clientes desde bd
+        $clients = ' obtener clientes activos';  // ToDo: Implementar obtener clientes desde bd
 
-        foreach ( $ads as $ad){
+        //Iterar sobre los clientes para importar los anuncios, dealers y shops
+        foreach ($clients as $client){
 
-            $dealer = DealerBuilder::buildFromArray($ad['dealer']);  // ToDo: Procesar el dealer, verificar si existe en bd primero sino lo crea
-            $shop = ShopBuilder::buildFromArray($ad['shop']);        // ToDo: Procesar  la tienda, verificar si existe en bd primero sino lo crea
-            $images = $ad['images'];                                 // ToDo: Procesar la lista de imágenes
-            $advertisement = AdvertisementBuilder::buildFromArray($ad); // ToDo: Procesar el anuncio y persistirlo en bd
+            //Obtener id y secrest y setear a cliente de apimf
+            $this->apiMFClient->setApiMfClientId($client->getApiMfClientId());
+            $this->apiMFClient->setApiMfClientSecret($client->getApiMfClientSecret());
 
-            $output->writeln('Obtenido Anuncio: '.$ad['id']." Dealer: ".$dealer->getMfid()."  Shop: ".$shop->getMfid(). " Imágenes: ".count($images));
+            //Autenticarse en APIMF para acceder a los datos del cliente.
+            $this->apiMFClient->authenticate();
+
+            //pedir los anuncios del cliente solicitado
+            $resp = $this->apiMFClient->getAdsByPage(40,1);          //byShop(992);
+
+            $respArray = json_decode($resp,true);
+            if (json_last_error() !== JSON_ERROR_NONE){
+                $output->writeln('Error decodificando JSON de respuestqa de APIMF');
+                return Command::FAILURE;
+            }
+
+
+            $ads = $respArray['advertisements'];
+
+            foreach ( $ads as $ad){
+
+                $dealer = DealerBuilder::buildFromArray($ad['dealer']);  // ToDo: Procesar el dealer, verificar si existe en bd primero sino lo crea
+                $shop = ShopBuilder::buildFromArray($ad['shop']);        // ToDo: Procesar  la tienda, verificar si existe en bd primero sino lo crea
+                $images = $ad['images'];                                 // ToDo: Procesar la lista de imágenes
+                $advertisement = AdvertisementBuilder::buildFromArray($ad); // ToDo: Procesar el anuncio y persistirlo en bd
+
+                $output->writeln('Obtenido Anuncio: '.$ad['id']." Dealer: ".$dealer->getMfid()."  Shop: ".$shop->getMfid(). " Imágenes: ".count($images));
+            }
         }
+
+
+        //Mostrar resumen
 
         $output->writeln('Procesados '.count($ads).' anuncios !');
         $output->writeln('Ejecución completada !');
