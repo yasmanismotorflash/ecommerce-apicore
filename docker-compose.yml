@@ -1,10 +1,10 @@
 
 networks:
-  apicore-net:
+  apicorenet:
     driver: bridge
 
 services:
-  mysql:
+  data-base:
     image: mysql:9
     container_name: server-database
     restart: unless-stopped
@@ -18,14 +18,14 @@ services:
     ports:
       - "3310:3306"
     networks:
-      - apicore-net
+      - apicorenet
 
   redis:
     image: redis:alpine
     container_name: server-cache
     restart: unless-stopped
     networks:
-      - apicore-net
+      - apicorenet
 
   php:
     build:
@@ -37,10 +37,10 @@ services:
       - ./apicore:/var/www/apicore
     working_dir: /var/www/apicore
     depends_on:
-      - mysql
+      - data-base
       - redis
     networks:
-      - apicore-net
+      - apicorenet
 
   nginx:
     image: nginx:alpine
@@ -54,4 +54,4 @@ services:
     depends_on:
       - php
     networks:
-      - apicore-net
+      - apicorenet

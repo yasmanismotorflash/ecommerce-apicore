@@ -22,9 +22,6 @@ class Ecommerce
     #[ORM\Column(length: 150)]
     private ?string $url = null;
 
-    #[ORM\Column(type: 'uuid')]
-    private ?Uuid $uuid = null;
-
     #[ORM\Column]
     private ?int $mfSiteId = null;
 
@@ -71,17 +68,6 @@ class Ecommerce
     public function setUrl(string $url): static
     {
         $this->url = $url;
-        return $this;
-    }
-
-    public function getUuid(): ?Uuid
-    {
-        return $this->uuid;
-    }
-
-    public function setUuid(Uuid $uuid): static
-    {
-        $this->uuid = $uuid;
         return $this;
     }
 

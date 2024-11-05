@@ -100,16 +100,16 @@ class Advertisement
     #[ORM\Column(type: 'boolean')]
     private bool $iva;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private float $price;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private float $financedPrice;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private float $purchasePrice;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private float $priceNew;
 
 
@@ -131,7 +131,7 @@ class Advertisement
     #[ORM\Column(type: 'string', length: 50)]
     private string $tires_back;
 
-    #[ORM\Column(type: 'string', length: 50)]
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private string $fuel;
 
 
@@ -146,7 +146,7 @@ class Advertisement
 
 
 
-    #[ORM\Column(type: 'string', length: 50)]
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private string $traction;
 
     #[ORM\Column(type: 'string', length: 50)]
@@ -169,38 +169,6 @@ class Advertisement
 
     #[ORM\Column(type: 'integer')]
     private int $warrantyDuration;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    #[ORM\Column(type: 'string', length: 50)]
-    private string $monthlyRate_financiera_javascript;
-
-    #[ORM\Column(type: 'integer')]
-    private int $monthlyRate_id_site;
 
     #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'advertisement', cascade: ['persist', 'remove'])]
     private Collection $images;
@@ -770,28 +738,6 @@ class Advertisement
     public function setMonthlyRateCuota(float $monthlyRate_cuota): Advertisement
     {
         $this->monthlyRate_cuota = $monthlyRate_cuota;
-        return $this;
-    }
-
-    public function getMonthlyRateFinancieraJavascript(): string
-    {
-        return $this->monthlyRate_financiera_javascript;
-    }
-
-    public function setMonthlyRateFinancieraJavascript(string $monthlyRate_financiera_javascript): Advertisement
-    {
-        $this->monthlyRate_financiera_javascript = $monthlyRate_financiera_javascript;
-        return $this;
-    }
-
-    public function getMonthlyRateIdSite(): int
-    {
-        return $this->monthlyRate_id_site;
-    }
-
-    public function setMonthlyRateIdSite(int $monthlyRate_id_site): Advertisement
-    {
-        $this->monthlyRate_id_site = $monthlyRate_id_site;
         return $this;
     }
 
