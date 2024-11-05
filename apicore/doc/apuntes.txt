@@ -1,0 +1,1 @@
+ToDo: Todo debe estar relacionado con los ecomerces para poder sacar de forma sencilla la información a usar en todos los filtros.

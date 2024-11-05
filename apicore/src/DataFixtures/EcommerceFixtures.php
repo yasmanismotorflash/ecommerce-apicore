@@ -9,7 +9,7 @@ use App\Entity\Ecommerce;
 
 class EcommerceFixtures extends Fixture implements OrderedFixtureInterface
 {
-    public function getOrder()
+    public function getOrder():int
     {
         return 2;
     }

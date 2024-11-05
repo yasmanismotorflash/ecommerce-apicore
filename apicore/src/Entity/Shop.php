@@ -2,6 +2,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity]
@@ -52,6 +54,16 @@ class Shop
 
     #[ORM\Column(type: 'decimal', precision: 11, scale: 8, nullable: true)]
     private ?float $lng;
+
+
+    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'shop', cascade: ['persist'])]
+    private Collection $advertisements;
+
+    public function __construct()
+    {
+        $this->advertisements = new ArrayCollection();
+    }
+
 
     /**
      * @return int

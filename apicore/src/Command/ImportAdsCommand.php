@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Command;
 
 use Symfony\Component\Console\Command\Command;
@@ -15,6 +16,7 @@ use App\Services\Import\Motorflash\APIMF\APIMFClient;
 use App\Services\Import\Motorflash\APIMF\Transform\AdvertisementBuilder;
 use App\Services\Import\Motorflash\APIMF\Transform\DealerBuilder;
 use App\Services\Import\Motorflash\APIMF\Transform\ShopBuilder;
+use App\Services\Import\Motorflash\APIMF\Transform\ImageBuilder;
 
 #[AsCommand(name: 'apicore:import:ads', description: 'Importar anuncios de clientes')]
 class ImportAdsCommand extends Command
@@ -38,18 +40,13 @@ class ImportAdsCommand extends Command
     {
         $this
             ->setDescription('Importa anuncios desde APIMF para clientes activos')
-
-            ->addOption('dryrun',null,InputOption::VALUE_NONE,
+            ->addOption('dryrun', null, InputOption::VALUE_NONE,
                 'Si se especifica, el comando ejecutará en modo de prueba sin persistir datos en la base de datos')
-
-            ->addOption('pageLimit',null,InputOption::VALUE_OPTIONAL,
-                'Número de anuncios a traer por página en la importación',40)
-
-            ->addOption('clientId',null,InputOption::VALUE_OPTIONAL,
-                'Especifica el ID de un cliente en particular para importar solo sus anuncios',null);
+            ->addOption('pageLimit', null, InputOption::VALUE_OPTIONAL,
+                'Número de anuncios a traer por página en la importación', 40)
+            ->addOption('clientId', null, InputOption::VALUE_OPTIONAL,
+                'Especifica el ID de un cliente en particular para importar solo sus anuncios', null);
     }
-
-
 
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -62,8 +59,8 @@ class ImportAdsCommand extends Command
         $this->io->title('Inicio de importación de anuncios desde APIMF');
 
         // Filtrar clientes según el clientId, si se ha especificado o buscar los activos
-        $clients = $clientId?
-            [$this->entityManager->getRepository(Ecommerce::class)->find($clientId)]:
+        $clients = $clientId ?
+            [$this->entityManager->getRepository(Ecommerce::class)->find($clientId)] :
             $this->entityManager->getRepository(Ecommerce::class)->findBy(['active' => true]);
 
         if (!$clients) {
@@ -81,7 +78,6 @@ class ImportAdsCommand extends Command
     }
 
 
-
     private function processClientAds(Ecommerce $client): void
     {
         $this->io->section("Procesando cliente: {$client->getName()}");
@@ -91,40 +87,51 @@ class ImportAdsCommand extends Command
         $this->apiMFClient->setApiMfClientSecret($client->getApiMfClientSecret());
         $this->apiMFClient->authenticate();
 
-        // Obtener anuncios del cliente
-        $response = $this->apiMFClient->getAdsByPage(40, 1);
+        $page = 1;
+        $pages = 1;
+        $perPage = 40;
 
-        // ToDO: Implementar la logica para procesar todas las páginas
+        do {
+            // Obtener anuncios del cliente
+            $response = $this->apiMFClient->getAdsByPage($perPage, $page);
+            $responseData = json_decode($response, true);
 
-        $responseData = json_decode($response, true);
+            $page = intval($responseData['page']);
+            $pages = intval($responseData['pages']);
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $this->io->error('Error al decodificar JSON de respuesta de APIMF.');
-            return;
-        }
-
-        $ads = $responseData['advertisements'] ?? [];
-
-        foreach ($ads as $ad) {
-            $advertisement = AdvertisementBuilder::buildFromArray($ad);
-
-            // Asociar Dealer
-            $dealer = $this->getOrCreateDealer($ad['dealer']);
-            $advertisement->setDealer($dealer);
-
-            // Asociar Shop
-            $shop = $this->getOrCreateShop($ad['shop']);
-            $advertisement->setShop($shop);
-
-            // Si no es dryrun, persistimos
-            if (!$this->dryrun) {
-                $this->entityManager->persist($advertisement);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $this->io->error('Error al decodificar JSON de respuesta de APIMF.');
+                return;
             }
 
-            $this->io->text("Anuncio ID {$ad['id']} - Dealer: {$dealer->getMfid()}, Shop: {$shop->getMfid()}");
-        }
+            $ads = $responseData['advertisements'] ?? [];
 
-        $this->io->success("Procesados ".count($ads)." anuncios para el cliente {$client->getName()}.");
+            foreach ($ads as $ad) {
+                $advertisement = AdvertisementBuilder::buildFromArray($ad);
+
+                // Asociar Dealer
+                $dealer = $this->getOrCreateDealer($ad['dealer']);
+                $advertisement->setDealer($dealer);
+
+                // Asociar Shop
+                $shop = $this->getOrCreateShop($ad['shop']);
+                $advertisement->setShop($shop);
+
+                $images = $this->processImages($ad['images']);
+                $advertisement->setImages($images);
+
+                // Si no es dryrun, persistimos
+                if (!$this->dryrun) {
+                    $this->entityManager->persist($advertisement);
+                    $this->entityManager->flush();
+                }
+
+                // $this->io->text("Anuncio ID {$ad['id']} - Dealer: {$dealer->getMfid()}, Shop: {$shop->getMfid()}".", Images: ". count($images) );
+            }
+            $this->io->text("Procesada página: " . $page . " de " . $pages);
+            $page++;
+        } while ($page <= $pages);
+        $this->io->success("Procesados " . count($ads) . " anuncios para el cliente {$client->getName()}.");
     }
 
 
@@ -134,7 +141,7 @@ class ImportAdsCommand extends Command
     private function getOrCreateDealer(array $dealerData): Dealer
     {
         $dealer = DealerBuilder::buildFromArray($dealerData);
-        $existingDealer = $this->entityManager->getRepository(Dealer::class)->findOneBy(['mfid' => $dealer->getMfid()]);
+        $existingDealer = $this->entityManager->getRepository(Dealer::class)->findOneByMfid($dealer->getMfid());
 
         if (!$existingDealer && !$this->dryrun) {
             $this->entityManager->persist($dealer);
@@ -150,7 +157,7 @@ class ImportAdsCommand extends Command
     private function getOrCreateShop(array $shopData): Shop
     {
         $shop = ShopBuilder::buildFromArray($shopData);
-        $existingShop = $this->entityManager->getRepository(Shop::class)->findOneBy(['mfid' => $shop->getMfid()]);
+        $existingShop = $this->entityManager->getRepository(Shop::class)->findOneByMfid($shop->getMfid());
 
         if (!$existingShop && !$this->dryrun) {
             $this->entityManager->persist($shop);
@@ -159,15 +166,14 @@ class ImportAdsCommand extends Command
         return $existingShop ?: $shop;
     }
 
-   /* private function processImages(array $imagesData): array
+    private function processImages(array $imagesData): array
     {
         $images = [];
-        foreach ($imagesData as $imageData) {
-            $image = ImageBuilder::buildFromArray($imageData);
-            $this->entityManager->persist($image);
+        foreach ($imagesData as $url) {
+            $image = ImageBuilder::buildFromString($url);
             $images[] = $image;
         }
         return $images;
-    }*/
+    }
 
 }

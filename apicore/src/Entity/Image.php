@@ -15,26 +15,18 @@ class Image
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $ad_id = null;
-
     #[ORM\Column(length: 300)]
     private ?string $url = null;
+
+    #[ORM\ManyToOne(inversedBy: 'images')]
+    private ?Advertisement $advertisement = null;
+
+
 
     public function getId(): ?int {
         return $this->id;
     }
 
-    public function getAdId(): ?int
-    {
-        return $this->ad_id;
-    }
-
-    public function setAdId(int $ad_id): static
-    {
-        $this->ad_id = $ad_id;
-        return $this;
-    }
 
     public function getUrl(): ?string {
         return $this->url;
@@ -42,6 +34,18 @@ class Image
 
     public function setUrl(string $url): static {
         $this->url = $url;
+        return $this;
+    }
+
+    public function getAdvertisement(): ?Advertisement
+    {
+        return $this->advertisement;
+    }
+
+    public function setAdvertisement(?Advertisement $advertisement): static
+    {
+        $this->advertisement = $advertisement;
+
         return $this;
     }
 

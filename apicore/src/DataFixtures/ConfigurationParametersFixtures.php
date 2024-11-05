@@ -9,7 +9,7 @@ use App\Entity\ConfigurationParameter;
 
 class ConfigurationParametersFixtures extends Fixture implements OrderedFixtureInterface
 {
-    public function getOrder()
+    public function getOrder():int
     {
         return 1;
     }

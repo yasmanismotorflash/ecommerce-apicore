@@ -2,6 +2,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity]
@@ -78,11 +80,7 @@ class Advertisement
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private ?string $origen;
 
-    #[ORM\ManyToOne(targetEntity: Dealer::class)]
-    private ?Dealer $dealer;
 
-    #[ORM\ManyToOne(targetEntity: Shop::class, cascade: ['persist'])]
-    private ?Shop $shop;
 
 
     #[ORM\Column(type: 'string', length: 50)]
@@ -170,9 +168,6 @@ class Advertisement
     #[ORM\Column(type: 'integer')]
     private int $warrantyDuration;
 
-    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'advertisement', cascade: ['persist', 'remove'])]
-    private Collection $images;
-
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $video = null;
@@ -183,10 +178,22 @@ class Advertisement
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $textLegal = null;
 
+    #[ORM\ManyToOne(targetEntity: Dealer::class, inversedBy: 'advertisements')]
+    private ?Dealer $dealer;
 
+    #[ORM\ManyToOne(targetEntity: Shop::class, inversedBy: 'advertisements')]
+    private ?Shop $shop;
 
+    /**
+     * @var Collection<int, Image>
+     */
+    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'advertisement', cascade: ['persist'])]
+    private Collection $images;
 
-
+    public function __construct()
+    {
+        $this->images = new ArrayCollection();
+    }
 
 
     public function getId(): ?int
@@ -730,27 +737,8 @@ class Advertisement
         return $this;
     }
 
-    public function getMonthlyRateCuota(): float
-    {
-        return $this->monthlyRate_cuota;
-    }
 
-    public function setMonthlyRateCuota(float $monthlyRate_cuota): Advertisement
-    {
-        $this->monthlyRate_cuota = $monthlyRate_cuota;
-        return $this;
-    }
 
-    public function getImages(): Collection
-    {
-        return $this->images;
-    }
-
-    public function setImages(Collection $images): Advertisement
-    {
-        $this->images = $images;
-        return $this;
-    }
 
     public function getVideo(): ?string
     {
@@ -785,6 +773,45 @@ class Advertisement
         return $this;
     }
 
+    /**
+     * @return Collection<int, Image>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
 
+    public function addImage(Image $image): Advertisement
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setAdvertisement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): Advertisement
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getAdvertisement() === $this) {
+                $image->setAdvertisement(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function setImages(array $images)
+    {
+        foreach ($this->images as $image){
+            $this->removeImage($image);
+        }
+        foreach ($images as $image){
+            $this->addImage($image);
+        }
+        return $this;
+    }
 
 }
