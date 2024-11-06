@@ -28,14 +28,17 @@ class APIMFClient
         $this->httpClient = $httpClient;
     }
 
+    /**
+     *  Función para autenticación y obtener token de acceso al APIMF,
+     *  mientras el token sea válido usa el actual, si no pide uno nuevo
+     */
     public function authenticate(){
         $this->ensureToken();
     }
 
 
     /**
-     *  Función para autenticación y obtener token de acceso al APIMF,
-     *  mientras el token sea válido usa el actual, si no pide uno nuevo
+     *  Función para obtener token de acceso al APIMF,
      */
     private function getToken(): void
     {
@@ -49,8 +52,9 @@ class APIMFClient
     }
 
     /**
-     * Funcion para verificar la validez del token de autenticación
-     * @return bool true si está expirado, false si todavía es válido
+     * Funcion para verificar la validez del token de autenticación con
+     * un margen de 5 minutos a la fecha hora de expiración del mismo.
+     * @return bool true si es válido o false si es vacio o ha expirado
      */
     private function isTokenValid(): bool
     {
@@ -76,19 +80,15 @@ class APIMFClient
 
 
     /**
-     * Función para asegurar que el token siempre sea válido con un margen de 5 minutos a la fecha
-     * de expiración del mismo, si está vencido o próximo a vencer se renovará.
+     * Función para asegurar que el token siempre sea válido antes de usarse
      * retorna el token
      * */
-    protected function ensureToken()
+    protected function ensureToken():void
     {
         // Si el token está vacío o ha expirado, se obtiene uno nuevo
         if ( !$this->isTokenValid()) {
             $this->getToken();
-            return $this->token;
         }
-        // Retorna el token actual si sigue siendo válido
-        return $this->token;
     }
 
 
@@ -107,7 +107,7 @@ class APIMFClient
 
 
     /**
-     * Función para obtener un anuncio especificando el Vehicle Idintification Number (VIN)
+     * Función para obtener un anuncio especificando el Vehicle Identification Number (VIN)
      * @param int $VIN del de anuncio
      * @return string (json)
      */
@@ -116,6 +116,7 @@ class APIMFClient
         $endpoint = $this->apiMfUrl.'/api/advertisement?vin='.$VIN;
         return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
     }
+
 
     /**
      * Función para obtener un anuncio especificando la placa o matrícula (plate)
@@ -139,6 +140,7 @@ class APIMFClient
         $endpoint = $this->apiMfUrl.'/api/advertisements?shop='.$shopId;
         return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
     }
+
 
     /**
      * Función para obtener una lista de anuncios especificando datos de paginado
