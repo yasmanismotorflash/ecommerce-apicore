@@ -136,7 +136,7 @@ class ImportAdsCommand extends Command
 
 
     /**
-     * Obtener un ojeto Dealer
+     * Obtener un objeto Dealer
      * */
     private function getOrCreateDealer(array $dealerData): Dealer
     {
