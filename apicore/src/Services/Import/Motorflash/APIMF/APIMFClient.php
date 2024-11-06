@@ -1,6 +1,6 @@
 <?php
-
 namespace App\Services\Import\Motorflash\APIMF;
+
 use App\Services\Comun\Configuration;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -21,19 +21,15 @@ class APIMFClient
     private bool $debug;
 
 
-
     public function __construct(Configuration $config, HttpClientInterface $httpClient)
     {
         $config->configure();
         $this->apiMfUrl = $config->getParameter('API-MF-URL')->getValue();
-        //$this->apiMfClientId = $config->getParameter('API-MF-CLIENT-ID')->getValue();
-        //$this->apiMfClientSecret = $config->getParameter('API-MF-CLIENT-SECRET')->getValue();
         $this->httpClient = $httpClient;
-        //$this->getToken();
     }
 
     public function authenticate(){
-        $this->getToken();
+        $this->ensureToken();
     }
 
 
@@ -43,7 +39,6 @@ class APIMFClient
      */
     private function getToken(): void
     {
-        if ('' === $this->token || !$this->checkTokenExpired()) {
             $endpoint = $this->apiMfUrl.'/api/token';
             $payload = [ 'client_id' => $this->apiMfClientId, 'client_secret' => $this->apiMfClientSecret];
             $response = $this->httpClient->request('POST', $endpoint, ['json' => $payload]);
@@ -51,22 +46,32 @@ class APIMFClient
                 $this->token = json_decode($response->getContent(),true)['access_token'];
             else
                 $this->token = '';
-        }
     }
 
     /**
      * Funcion para verificar la validez del token de autenticación
      * @return bool true si está expirado, false si todavía es válido
      */
-    private function checkTokenExpired(): bool
+    private function isTokenValid(): bool
     {
         if ('' === $this->token) {
-            return true;
+            return false;
         }
 
-        //ToDo decodificar token y ver si es válido todavía antes de pedir uno nuevo
+        // Decodificar el token y obtener la posición del campo "exp" (fecha de expiración)
+        $decodedToken = base64_decode($this->token);
+        $expPosition = strpos($decodedToken, '"exp":') + strlen('"exp":');
+        $expirationTime = (int)substr($decodedToken, $expPosition, strpos($decodedToken, '}', $expPosition) - $expPosition);
 
-        return false;
+        // Ajuste de margen de tiempo de 5 minutos antes de la expiración
+        $expirationThreshold = $expirationTime - (5 * 60);
+
+        // Si el token está cerca de expirar
+        if (time() > $expirationThreshold) {
+            return false;
+        }
+
+        return true;
     }
 
 
@@ -75,50 +80,16 @@ class APIMFClient
      * de expiración del mismo, si está vencido o próximo a vencer se renovará.
      * retorna el token
      * */
-   /* protected function aseguraToken()
+    protected function ensureToken()
     {
-        if ($this->tokenApi == '') {
-            return $this->obtenerTokenApi();
+        // Si el token está vacío o ha expirado, se obtiene uno nuevo
+        if ( !$this->isTokenValid()) {
+            $this->getToken();
+            return $this->token;
         }
-        $tokenDecodificado = base64_decode($this->tokenApi);
-        $expPos = strpos($tokenDecodificado, '"exp":'); // Encontrar la posición del campo "exp" en la cadena
-        $expStartPos = $expPos + strlen('"exp":');
-        $expEndPos = strpos($tokenDecodificado, '}', $expStartPos);
-        $exp = substr($tokenDecodificado, $expStartPos, $expEndPos - $expStartPos);
-        $exp = (int)$exp;
-
-        $margen_minutos = 5;  // Resta 5 minutos a la fecha de expiración (300 segundos)
-        $timestamp_margen = $exp - ($margen_minutos * 60);
-        $fecha_expiracion_margen = date('Y-m-d H:i:s', $timestamp_margen);
-
-        $fecha_actual = date('Y-m-d H:i:s');  // Obtiene la fecha y hora actual
-
-        if ($fecha_actual > $fecha_expiracion_margen)  // Verifica si el token ha expirado
-        {
-            $this->output->writeln(__FUNCTION__ . " TOKEN Expirado o muy pronto a expirar, se renovará");
-            return $this->obtenerTokenApi();
-        }
-
-        // El token sigue siendo válido, devolver actual
-        return $this->tokenApi;
+        // Retorna el token actual si sigue siendo válido
+        return $this->token;
     }
-    */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -129,6 +100,7 @@ class APIMFClient
      */
     public function getAdByMfId(int $ad_id): ?string
     {
+        $this->ensureToken();
         $endpoint = $this->apiMfUrl.'/api/advertisement?id='.$ad_id;
         return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
     }
@@ -140,6 +112,7 @@ class APIMFClient
      * @return string (json)
      */
     public function getAdByVIN(int $VIN): ?string {
+        $this->ensureToken();
         $endpoint = $this->apiMfUrl.'/api/advertisement?vin='.$VIN;
         return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
     }
@@ -150,6 +123,7 @@ class APIMFClient
      * @return string (json)
      */
     public function getAdByPlate(string $plate): ?string {
+        $this->ensureToken();
         $endpoint = $this->apiMfUrl.'/api/advertisement?plate='.$plate;
         return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
     }
@@ -161,6 +135,7 @@ class APIMFClient
      * @return string (json)
      */
     public function getAdsByShop(string $shopId): ?string {
+        $this->ensureToken();
         $endpoint = $this->apiMfUrl.'/api/advertisements?shop='.$shopId;
         return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
     }
@@ -172,6 +147,7 @@ class APIMFClient
      * @return string (json)
      */
     public function getAdsByPage(int $perPage = 40, int $page = 1): ?string {
+        $this->ensureToken();
         $endpoint = $this->apiMfUrl.'/api/advertisements?perPage='.$perPage.'&page='.$page;
         return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
     }
@@ -187,6 +163,14 @@ class APIMFClient
     }
 
     /**
+     * @return string|null
+     */
+    public function getApiMfClientId(): ?string
+    {
+        return $this->apiMfClientId;
+    }
+
+    /**
      * @param string|null $apiMfClientId
      * @return APIMFClient
      */
@@ -197,6 +181,15 @@ class APIMFClient
     }
 
     /**
+     * @return string|null
+     */
+    public function getApiMfClientSecret(): ?string
+    {
+        return $this->apiMfClientSecret;
+    }
+
+
+    /**
      * @param string|null $apiMfClientSecret
      * @return APIMFClient
      */
@@ -205,8 +198,5 @@ class APIMFClient
         $this->apiMfClientSecret = $apiMfClientSecret;
         return $this;
     }
-
-
-
 
 }
