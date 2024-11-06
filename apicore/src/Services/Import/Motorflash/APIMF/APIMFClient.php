@@ -28,11 +28,13 @@ class APIMFClient
         $this->httpClient = $httpClient;
     }
 
+
     /**
      *  Función para autenticación y obtener token de acceso al APIMF,
      *  mientras el token sea válido usa el actual, si no pide uno nuevo
      */
-    public function authenticate(){
+    public function authenticate()
+    {
         $this->ensureToken();
     }
 
@@ -42,14 +44,15 @@ class APIMFClient
      */
     private function getToken(): void
     {
-            $endpoint = $this->apiMfUrl.'/api/token';
-            $payload = [ 'client_id' => $this->apiMfClientId, 'client_secret' => $this->apiMfClientSecret];
-            $response = $this->httpClient->request('POST', $endpoint, ['json' => $payload]);
-            if($response->getStatusCode() === 200)
-                $this->token = json_decode($response->getContent(),true)['access_token'];
-            else
-                $this->token = '';
+        $endpoint = $this->apiMfUrl . '/api/token';
+        $payload = ['client_id' => $this->apiMfClientId, 'client_secret' => $this->apiMfClientSecret];
+        $response = $this->httpClient->request('POST', $endpoint, ['json' => $payload]);
+        if ($response->getStatusCode() === 200)
+            $this->token = json_decode($response->getContent(), true)['access_token'];
+        else
+            $this->token = '';
     }
+
 
     /**
      * Funcion para verificar la validez del token de autenticación con
@@ -58,24 +61,14 @@ class APIMFClient
      */
     private function isTokenValid(): bool
     {
-        if ('' === $this->token) {
+        if (empty($this->token)) {
             return false;
         }
-
-        // Decodificar el token y obtener la posición del campo "exp" (fecha de expiración)
         $decodedToken = base64_decode($this->token);
         $expPosition = strpos($decodedToken, '"exp":') + strlen('"exp":');
         $expirationTime = (int)substr($decodedToken, $expPosition, strpos($decodedToken, '}', $expPosition) - $expPosition);
-
-        // Ajuste de margen de tiempo de 5 minutos antes de la expiración
         $expirationThreshold = $expirationTime - (5 * 60);
-
-        // Si el token está cerca de expirar
-        if (time() > $expirationThreshold) {
-            return false;
-        }
-
-        return true;
+        return time() <= $expirationThreshold;
     }
 
 
@@ -83,14 +76,13 @@ class APIMFClient
      * Función para asegurar que el token siempre sea válido antes de usarse
      * retorna el token
      * */
-    protected function ensureToken():void
+    protected function ensureToken(): void
     {
         // Si el token está vacío o ha expirado, se obtiene uno nuevo
-        if ( !$this->isTokenValid()) {
+        if (!$this->isTokenValid()) {
             $this->getToken();
         }
     }
-
 
 
     /**
@@ -101,8 +93,8 @@ class APIMFClient
     public function getAdByMfId(int $ad_id): ?string
     {
         $this->ensureToken();
-        $endpoint = $this->apiMfUrl.'/api/advertisement?id='.$ad_id;
-        return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
+        $endpoint = $this->apiMfUrl . '/api/advertisement?id=' . $ad_id;
+        return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer ' . $this->token]])->getContent();
     }
 
 
@@ -111,10 +103,11 @@ class APIMFClient
      * @param int $VIN del de anuncio
      * @return string (json)
      */
-    public function getAdByVIN(int $VIN): ?string {
+    public function getAdByVIN(int $VIN): ?string
+    {
         $this->ensureToken();
-        $endpoint = $this->apiMfUrl.'/api/advertisement?vin='.$VIN;
-        return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
+        $endpoint = $this->apiMfUrl . '/api/advertisement?vin=' . $VIN;
+        return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer ' . $this->token]])->getContent();
     }
 
 
@@ -123,10 +116,11 @@ class APIMFClient
      * @param string $plate matricula del de anuncio
      * @return string (json)
      */
-    public function getAdByPlate(string $plate): ?string {
+    public function getAdByPlate(string $plate): ?string
+    {
         $this->ensureToken();
-        $endpoint = $this->apiMfUrl.'/api/advertisement?plate='.$plate;
-        return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
+        $endpoint = $this->apiMfUrl . '/api/advertisement?plate=' . $plate;
+        return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer ' . $this->token]])->getContent();
     }
 
 
@@ -135,10 +129,11 @@ class APIMFClient
      * @param string $shopId id de la tienda
      * @return string (json)
      */
-    public function getAdsByShop(string $shopId): ?string {
+    public function getAdsByShop(string $shopId): ?string
+    {
         $this->ensureToken();
-        $endpoint = $this->apiMfUrl.'/api/advertisements?shop='.$shopId;
-        return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
+        $endpoint = $this->apiMfUrl . '/api/advertisements?shop=' . $shopId;
+        return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer ' . $this->token]])->getContent();
     }
 
 
@@ -148,20 +143,20 @@ class APIMFClient
      * @param string $page pagina solicitada
      * @return string (json)
      */
-    public function getAdsByPage(int $perPage = 40, int $page = 1): ?string {
+    public function getAdsByPage(int $perPage = 40, int $page = 1): ?string
+    {
         $this->ensureToken();
-        $endpoint = $this->apiMfUrl.'/api/advertisements?perPage='.$perPage.'&page='.$page;
-        return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer '.$this->token]])->getContent();
+        $endpoint = $this->apiMfUrl . '/api/advertisements?perPage=' . $perPage . '&page=' . $page;
+        return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer ' . $this->token]])->getContent();
     }
-
 
 
     public function dumpConfig(): void
     {
-        echo 'APIMF URL:'.$this->apiMfUrl."\n";
-        echo 'APIMF CLIENTID:'.$this->apiMfClientId."\n";
-        echo 'APIMF SECRET:'.$this->apiMfClientSecret."\n";
-        echo 'APIMF TOKEN (Current): '.$this->token."\n";
+        echo 'APIMF URL:' . $this->apiMfUrl . "\n";
+        echo 'APIMF CLIENTID:' . $this->apiMfClientId . "\n";
+        echo 'APIMF SECRET:' . $this->apiMfClientSecret . "\n";
+        echo 'APIMF TOKEN (Current): ' . $this->token . "\n";
     }
 
     /**
