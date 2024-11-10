@@ -228,7 +228,7 @@ class Advertisement
     /**
      * @var Collection<int, Image>
      */
-    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'advertisement', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'advertisement', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $images;
 
     #[ORM\OneToOne(inversedBy: 'advertisement', cascade: ['persist', 'remove'])]
