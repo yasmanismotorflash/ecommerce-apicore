@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\Ecommerce;
+use App\Entity\Site;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Ecommerce>
+ * @extends ServiceEntityRepository<Site>
  */
-class EcommerceRepository extends ServiceEntityRepository
+class SiteRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Ecommerce::class);
+        parent::__construct($registry, Site::class);
     }
 
     //    /**
-    //     * @return Ecommerce[] Returns an array of Ecommerce objects
+    //     * @return Site[] Returns an array of Site objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class EcommerceRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Ecommerce
+    //    public function findOneBySomeField($value): ?Site
     //    {
     //        return $this->createQueryBuilder('e')
     //            ->andWhere('e.exampleField = :val')

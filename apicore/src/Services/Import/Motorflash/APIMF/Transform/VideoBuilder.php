@@ -1,9 +1,9 @@
 <?php
 namespace App\Services\Import\Motorflash\APIMF\Transform;
 
-use App\Entity\Image;
+use App\Entity\Video;
 
-class  ImageBuilder
+class  VideoBuilder
 {
 
     static function validateString(string $url): bool {
@@ -13,9 +13,9 @@ class  ImageBuilder
         return true;
     }
 
-    static function buildFromString(string $url): ?Image {
-        if( ImageBuilder::validateString($url)) {
-            $entity = new Image();
+    static function buildFromString(string $url): ?Video {
+        if( VideoBuilder::validateString($url)) {
+            $entity = new Video();
             return $entity->setUrl($url);
         }
         return null;

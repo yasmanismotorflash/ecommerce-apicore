@@ -4,19 +4,19 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use App\Entity\Ecommerce;
+use App\Entity\Site;
 
 
-class EcommerceFixtures extends Fixture implements OrderedFixtureInterface
+class DF03_SitesFixtures extends Fixture implements OrderedFixtureInterface
 {
     public function getOrder():int
     {
-        return 2;
+        return 3;
     }
 
     public function load(ObjectManager $manager): void
     {
-        $ecommerces = [
+        $sites = [
             [
                 'name'=>'DaswelAuto',
                 'url'=>'www.daswellauto.es',
@@ -29,18 +29,18 @@ class EcommerceFixtures extends Fixture implements OrderedFixtureInterface
             ]
         ];
 
-        foreach ($ecommerces as $ecommerce) {
-            $newEcommerce = new Ecommerce();
-            $newEcommerce->setName($ecommerce['name'])
-                ->setUrl($ecommerce['url'])
-                ->setMfSiteId($ecommerce['mfSiteId'])
-                ->setApicoreClientId($ecommerce['apicoreClientId'])
-                ->setApicoreClientSecret($ecommerce['apicoreClientSecret'])
-                ->setApimfClientId($ecommerce['apimfClientId'])
-                ->setApimfClientSecret($ecommerce['apimfClientSecret'])
-                ->setActive($ecommerce['active']);
+        foreach ($sites as $site) {
+            $newSite = new Site();
+            $newSite->setName($site['name'])
+                ->setUrl($site['url'])
+                ->setMfSiteId($site['mfSiteId'])
+                ->setApicoreClientId($site['apicoreClientId'])
+                ->setApicoreClientSecret($site['apicoreClientSecret'])
+                ->setApimfClientId($site['apimfClientId'])
+                ->setApimfClientSecret($site['apimfClientSecret'])
+                ->setActive($site['active']);
 
-            $manager->persist($newEcommerce);
+            $manager->persist($newSite);
         }
 
         $manager->flush();

@@ -6,7 +6,7 @@ use App\Repository\ImageRepository;
 use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
-#[ORM\Table(name: 'images')]
+#[ORM\Table(name: 'images', options: ["comment" => "Tabla para almacenar las imágenes de los anuncios"])]
 #[ApiResource]
 class Image
 {
@@ -15,10 +15,15 @@ class Image
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 300)]
+    #[ORM\Column(type: 'string', name: 'url',length: 300, options: ["comment" => "Campo url de la imágen"])]
     private ?string $url = null;
 
+
+    #[ORM\Column(type: 'string', name: 'urlhash',length: 40, options: ["comment" => "Campo hash de la url de la imágen"])]
+    private ?string $urlhash = null;
+
     #[ORM\ManyToOne(inversedBy: 'images')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Advertisement $advertisement = null;
 
 
@@ -32,8 +37,20 @@ class Image
         return $this->url;
     }
 
-    public function setUrl(string $url): static {
+    public function setUrl(string $url): Image {
         $this->url = $url;
+        $this->urlhash = md5($url);
+        return $this;
+    }
+
+    public function getUrlhash(): ?string
+    {
+        return $this->urlhash;
+    }
+
+    public function setUrlhash(string $urlhash): Image
+    {
+        $this->urlhash = $urlhash;
         return $this;
     }
 
@@ -48,5 +65,7 @@ class Image
 
         return $this;
     }
+
+
 
 }

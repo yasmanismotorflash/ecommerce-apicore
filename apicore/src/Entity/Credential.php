@@ -4,16 +4,16 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use App\Repository\UserRepository;
+use App\Repository\CredentialRepository;
 use ApiPlatform\Metadata\ApiResource;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: 'users')]
+#[ORM\Entity(repositoryClass: CredentialRepository::class)]
+#[ORM\Table(name: 'credentials', options: ["comment" => "Tabla para almacenar las credenciales de acceso a APICORE"])]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ApiResource]
 
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class Credential implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -21,8 +21,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[Assert\NotBlank]
+    #[Assert\Length(min: 9,max: 120)]
     #[Assert\Email]
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(type: 'string', name: 'email', length: 120, options: ["comment" => "Campo email de la cuenta de acceso"])]
     private ?string $email = null;
 
 
@@ -31,13 +32,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[Assert\Length(min: 3,max: 200)]
     #[Assert\NotBlank]
-    #[ORM\Column]
+    #[ORM\Column(type: 'string', name: 'password',length:200, options: ["comment" => "Campo password cifrado"])]
     private ?string $password = null;
 
     /**
      * @var list<string> The user roles
      */
-    #[ORM\Column]
+    #[ORM\Column( name: 'roles', options: ["comment" => "Campo roles, json con roles de la credencial"])]
     private array $roles = [];
 
 

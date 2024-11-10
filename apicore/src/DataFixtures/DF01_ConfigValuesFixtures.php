@@ -4,10 +4,10 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use App\Entity\ConfigurationParameter;
+use App\Entity\ConfigValue;
 
 
-class ConfigurationParametersFixtures extends Fixture implements OrderedFixtureInterface
+class DF01_ConfigValuesFixtures extends Fixture implements OrderedFixtureInterface
 {
     public function getOrder():int
     {
@@ -19,15 +19,15 @@ class ConfigurationParametersFixtures extends Fixture implements OrderedFixtureI
 
         //TODO: definir donde se almacenaran las credenciales para importar datos iniciales, y que no se suban al repositorio.
         //---Crear usuarios----------------------------------------------------------------------------
-        $parameters = [
+        $configValues = [
             //---APIMF-CONFIGURACION
             ['string', 'API-MF-URL', 'https://apimf.motorflash.com'],
         ];
 
-        foreach ($parameters as $parameter) {
-            $newConfigParameter = new ConfigurationParameter();
-            $newConfigParameter->setType($parameter[0])->setName($parameter[1])->setValueStr($parameter[2]);
-            $manager->persist($newConfigParameter);
+        foreach ($configValues as $cfgValue) {
+            $newCfgValue = new ConfigValue();
+            $newCfgValue->setType($cfgValue[0])->setName($cfgValue[1])->setValueStr($cfgValue[2]);
+            $manager->persist($newCfgValue);
         }
 
         $manager->flush();

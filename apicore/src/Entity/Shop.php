@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'shops')]
+#[ORM\Table(name: 'shops', options: ["comment" => "Tabla para almacenar shops (Tiendas)"])]
 #[ApiResource]
 class Shop
 {
@@ -16,52 +16,70 @@ class Shop
     #[ORM\Column(type: 'integer')]
     private int $id;
 
-    #[ORM\Column(name: 'mfid', type: 'integer')]
+    #[ORM\Column(type: 'integer', name: 'mfid', options: ["comment" => "Campo mfid, contiene el id usado en motorflash"])]
     private int $mfid;
 
-    #[ORM\Column(type: 'integer')]
-    private int $user;
 
-    #[ORM\Column(type: 'string', length: 100)]
+    #[ORM\Column(type: 'integer', name: 'dealermfid', options: ["comment" => "Campo dealermfid, contiene el id del dealer usado en motorflash"])]
+    private int $dealermfid;
+
+    #[ORM\Column(type: 'string', name: 'name',length: 120, options: ["comment" => "Campo nombre visible de la shop (Tienda)"])]
     private string $name;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', name: 'address',length: 120, options: ["comment" => "Campo dirección de la shop (Tienda)"])]
     private string $address;
 
-    #[ORM\Column(type: 'string', length: 10)]
+    #[ORM\Column(type: 'string', name: 'cp',length: 10, options: ["comment" => "Campo codigo postal de la shop (Tienda)"])]
     private string $cp;
 
-    #[ORM\Column(type: 'string', length: 100)]
+    #[ORM\Column(type: 'string', name: 'city',length: 120, options: ["comment" => "Campo ciudad de la shop (Tienda)"])]
     private string $city;
 
-    #[ORM\Column(type: 'string', length: 2)]
+    #[ORM\Column(type: 'string', name: 'provinceid',length: 5, options: ["comment" => "Campo id provincia de la shop (Tienda)"])]
     private string $provinceId;
 
-    #[ORM\Column(type: 'string', length: 100)]
+    #[ORM\Column(type: 'string', name: 'province',length: 100, options: ["comment" => "Campo provincia de la shop (Tienda)"])]
     private string $province;
 
-    #[ORM\Column(type: 'string', length: 2)]
+    #[ORM\Column(type: 'string', name: 'country',length: 100, options: ["comment" => "Campo código país de la shop (Tienda)"])]
     private string $country;
 
-    #[ORM\Column(type: 'string', length: 20, nullable: true)]
+    #[ORM\Column(type: 'string', name: 'phone',length: 20, options: ["comment" => "Campo teléfono de la shop (Tienda)"])]
     private ?string $phone;
 
-    #[ORM\Column(type: 'string', length: 100)]
+    #[ORM\Column(type: 'string', name: 'email',length: 120, options: ["comment" => "Campo email de la shop (Tienda)"])]
     private string $email;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 8, nullable: true)]
-    private ?float $lt;
 
-    #[ORM\Column(type: 'decimal', precision: 11, scale: 8, nullable: true)]
-    private ?float $lng;
+    #[ORM\Column(type: 'decimal', name: 'lt', precision: 11, scale: 8, nullable: true, options: ["comment" => "Campo ubicación latitud de la shop (Tienda)"])]
+    private ?string $lt;
 
+    #[ORM\Column(type: 'decimal', name: 'lng', precision: 11, scale: 8, nullable: true, options: ["comment" => "Campo ubicación longitud de la shop (Tienda)"])]
+    private ?string $lng;
 
-    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'shop', cascade: ['persist'])]
+    #[ORM\ManyToOne(inversedBy: 'shops')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Dealer $dealer = null;
+
+    /**
+     * @var Collection<int, Advertisement>
+     */
+    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'shop', orphanRemoval: true)]
     private Collection $advertisements;
+
+    /**
+     * @var Collection<int, Site>
+     */
+    #[ORM\ManyToMany(targetEntity: Site::class, inversedBy: 'shops')]
+    private Collection $sites;
+
+
+
 
     public function __construct()
     {
         $this->advertisements = new ArrayCollection();
+        $this->sites = new ArrayCollection();
     }
 
 
@@ -97,18 +115,18 @@ class Shop
     /**
      * @return int
      */
-    public function getUser(): int
+    public function getDealerMfId(): int
     {
-        return $this->user;
+        return $this->dealermfid;
     }
 
     /**
-     * @param int $user
+     * @param int $dealermfid
      * @return Shop
      */
-    public function setUser(int $user): Shop
+    public function setDealerMfId(int $dealermfid): Shop
     {
-        $this->user = $user;
+        $this->dealermfid = $dealermfid;
         return $this;
     }
 
@@ -279,7 +297,7 @@ class Shop
      */
     public function getLt(): ?float
     {
-        return $this->lt;
+        return $this->lt !== null ? (float)$this->lt : null;
     }
 
     /**
@@ -288,7 +306,7 @@ class Shop
      */
     public function setLt(?float $lt): Shop
     {
-        $this->lt = $lt;
+        $this->lt = $lt !== null ? (string)$lt : null;
         return $this;
     }
 
@@ -297,7 +315,7 @@ class Shop
      */
     public function getLng(): ?float
     {
-        return $this->lng;
+        return $this->lng !== null ? (float)$this->lng : null;
     }
 
     /**
@@ -306,7 +324,73 @@ class Shop
      */
     public function setLng(?float $lng): Shop
     {
-        $this->lng = $lng;
+        $this->lng = $lng !== null ? (string)$lng : null;
+        return $this;
+    }
+
+    public function getDealer(): ?Dealer
+    {
+        return $this->dealer;
+    }
+
+    public function setDealer(?Dealer $dealer): static
+    {
+        $this->dealer = $dealer;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Advertisement>
+     */
+    public function getAdvertisements(): Collection
+    {
+        return $this->advertisements;
+    }
+
+    public function addAdvertisement(Advertisement $advertisement): static
+    {
+        if (!$this->advertisements->contains($advertisement)) {
+            $this->advertisements->add($advertisement);
+            $advertisement->setShop($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAdvertisement(Advertisement $advertisement): static
+    {
+        if ($this->advertisements->removeElement($advertisement)) {
+            // set the owning side to null (unless already changed)
+            if ($advertisement->getShop() === $this) {
+                $advertisement->setShop(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Site>
+     */
+    public function getSites(): Collection
+    {
+        return $this->sites;
+    }
+
+    public function addSite(Site $site): static
+    {
+        if (!$this->sites->contains($site)) {
+            $this->sites->add($site);
+        }
+
+        return $this;
+    }
+
+    public function removeSite(Site $site): static
+    {
+        $this->sites->removeElement($site);
+
         return $this;
     }
 

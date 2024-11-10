@@ -12,7 +12,7 @@ use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Serializer\Filter\PropertyFilter;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'advertisements')]
+#[ORM\Table(name: 'advertisements', options: ["comment" => "Tabla para almacenar los anuncios"])]
 #[ApiResource( paginationItemsPerPage: 40)]
 #[ApiFilter(PropertyFilter::class)]
 class Advertisement
@@ -22,11 +22,10 @@ class Advertisement
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-
     /**
      * ID de anuncio de Motorflash
      * */
-    #[ORM\Column(name: 'mfid', type: 'integer')]
+    #[ORM\Column(type: 'integer', name: 'mfid', options: ["comment" => "Campo mfid, contiene el id usado en motorflash"])]
     private int $mfid;
 
     #[ORM\Column(type: 'string', length: 20)]
@@ -121,19 +120,19 @@ class Advertisement
 
     #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
-    private float $price;
+    private string $price;
 
     #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
-    private float $financedPrice;
+    private string $financedPrice;
 
     #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
-    private float $purchasePrice;
+    private string $purchasePrice;
 
     #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
-    private float $priceNew;
+    private string $priceNew;
 
 
     #[ApiFilter(RangeFilter::class)]
@@ -162,9 +161,6 @@ class Advertisement
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private string $fuel;
-
-
-
 
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50)]
@@ -201,43 +197,68 @@ class Advertisement
     #[ORM\Column(type: 'integer')]
     private int $warrantyDuration;
 
-
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $video = null;
-
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $quote = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $textLegal = null;
 
-    #[ORM\ManyToOne(targetEntity: Dealer::class, inversedBy: 'advertisements')]
-    private ?Dealer $dealer;
 
-    #[ORM\ManyToOne(targetEntity: Shop::class, inversedBy: 'advertisements')]
-    private ?Shop $shop;
+
+
+
+
+
+
+
+    /**
+     * @var Collection<int, Site>
+     */
+    #[ORM\ManyToMany(targetEntity: Site::class, mappedBy: 'advertisements')]
+    private Collection $sites;
+
+    #[ORM\ManyToOne(inversedBy: 'advertisements')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Dealer $dealer = null;
+
+    #[ORM\ManyToOne(inversedBy: 'advertisements')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Shop $shop = null;
 
     /**
      * @var Collection<int, Image>
      */
-    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'advertisement', cascade: ['persist'])]
+    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'advertisement', orphanRemoval: true)]
     private Collection $images;
+
+    #[ORM\OneToOne(inversedBy: 'advertisement', cascade: ['persist', 'remove'])]
+    private ?Video $video = null;
+
+
+
+    #[ORM\ManyToOne(inversedBy: 'advertisements')]
+    private ?Make $makeObject = null;
+
+    #[ORM\ManyToOne(inversedBy: 'advertisements')]
+    private ?Model $modelObject = null;
+
+    #[ORM\ManyToOne(inversedBy: 'advertisements')]
+    private ?Version $versionObject = null;
+
+
+
 
     public function __construct()
     {
+        $this->sites = new ArrayCollection();
         $this->images = new ArrayCollection();
+
     }
 
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(?int $id): Advertisement
-    {
-        $this->id = $id;
-        return $this;
     }
 
     public function getMfid(): int
@@ -550,42 +571,42 @@ class Advertisement
         return $this;
     }
 
-    public function getPrice(): float
+    public function getPrice(): ?float
     {
-        return $this->price;
+        return $this->price !== null ? (float)$this->price : null;
     }
 
     public function setPrice(float $price): Advertisement
     {
-        $this->price = $price;
+        $this->price = $price !== null ? (string)$price : null;
         return $this;
     }
 
-    public function getFinancedPrice(): float
+    public function getFinancedPrice(): ?float
     {
-        return $this->financedPrice;
+        return $this->financedPrice !== null ? (float)$this->financedPrice : null;
     }
 
     public function setFinancedPrice(float $financedPrice): Advertisement
     {
-        $this->financedPrice = $financedPrice;
+        $this->financedPrice = $financedPrice !== null ? (string)$financedPrice : null;
         return $this;
     }
 
-    public function getPurchasePrice(): float
+    public function getPurchasePrice(): ?float
     {
-        return $this->purchasePrice;
+        return $this->purchasePrice !== null ? (float)$this->purchasePrice : null;
     }
 
     public function setPurchasePrice(float $purchasePrice): Advertisement
     {
-        $this->purchasePrice = $purchasePrice;
+        $this->purchasePrice = $purchasePrice !== null ? (string)$purchasePrice : null;
         return $this;
     }
 
-    public function getPriceNew(): float
+    public function getPriceNew(): ?float
     {
-        return $this->priceNew;
+        return $this->priceNew !== null ? (float)$this->priceNew : null;
     }
 
     public function setPriceNew(float $priceNew): Advertisement
@@ -770,20 +791,6 @@ class Advertisement
         return $this;
     }
 
-
-
-
-    public function getVideo(): ?string
-    {
-        return $this->video;
-    }
-
-    public function setVideo(?string $video): Advertisement
-    {
-        $this->video = $video;
-        return $this;
-    }
-
     public function getQuote(): ?string
     {
         return $this->quote;
@@ -846,5 +853,89 @@ class Advertisement
         }
         return $this;
     }
+
+    public function getVideo(): ?Video
+    {
+        return $this->video;
+    }
+
+    public function setVideo(Video $video): static
+    {
+        // set the owning side of the relation if necessary
+        if ($video->getAdvertisement() !== $this) {
+            $video->setAdvertisement($this);
+        }
+        $this->video = $video;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Site>
+     */
+    public function getSites(): Collection
+    {
+        return $this->sites;
+    }
+
+    public function addSite(Site $site): static
+    {
+        if (!$this->sites->contains($site)) {
+            $this->sites->add($site);
+            $site->addAdvertisement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSite(Site $site): static
+    {
+        if ($this->sites->removeElement($site)) {
+            $site->removeAdvertisement($this);
+        }
+
+        return $this;
+    }
+
+    /*public function __toString():string
+    {
+        return 'Anuncio: '.$this->mfid.' Marca: '.$this->make.' Modelo: '.$this->model.' Version: '.$this->version;
+    }*/
+
+    public function getMakeObject(): ?Make
+    {
+        return $this->makeObject;
+    }
+
+    public function setMakeObject(?Make $makeObject): static
+    {
+        $this->makeObject = $makeObject;
+
+        return $this;
+    }
+
+    public function getModelObject(): ?Model
+    {
+        return $this->modelObject;
+    }
+
+    public function setModelObject(?Model $modelObject): static
+    {
+        $this->modelObject = $modelObject;
+
+        return $this;
+    }
+
+    public function getVersionObject(): ?Version
+    {
+        return $this->versionObject;
+    }
+
+    public function setVersionObject(?Version $versionObject): static
+    {
+        $this->versionObject = $versionObject;
+
+        return $this;
+    }
+
 
 }

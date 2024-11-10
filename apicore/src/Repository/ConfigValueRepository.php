@@ -2,18 +2,18 @@
 
 namespace App\Repository;
 
-use App\Entity\ConfigurationParameter;
+use App\Entity\ConfigValue;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<ConfigurationParameter>
+ * @extends ServiceEntityRepository<ConfigValue>
  */
-class ConfigurationParameterRepository extends ServiceEntityRepository
+class ConfigValueRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ConfigurationParameter::class);
+        parent::__construct($registry, ConfigValue::class);
     }
 
     public function countConfigurationParameter():int
@@ -62,7 +62,7 @@ class ConfigurationParameterRepository extends ServiceEntityRepository
 
 
     //    /**
-    //     * @return ConfigurationParameter[] Returns an array of ConfigurationParameter objects
+    //     * @return ConfigValue[] Returns an array of ConfigValue objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -76,7 +76,7 @@ class ConfigurationParameterRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?ConfigurationParameter
+    //    public function findOneBySomeField($value): ?ConfigValue
     //    {
     //        return $this->createQueryBuilder('p')
     //            ->andWhere('p.exampleField = :val')

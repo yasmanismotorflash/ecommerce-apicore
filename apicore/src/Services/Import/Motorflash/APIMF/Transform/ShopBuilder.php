@@ -36,7 +36,7 @@ class ShopBuilder implements BuilderInterface
             $entity = new Shop();
 
             return $entity->setMfid($data['id'])
-                ->setUser($data['user'])
+                ->setDealerMfId($data['user'])
                 ->setName($data['name'])
                 ->setAddress($data['address'])
                 ->setCp($data['cp'])
@@ -46,9 +46,12 @@ class ShopBuilder implements BuilderInterface
                 ->setCountry($data['country'])
                 ->setPhone($data['phone'])
                 ->setEmail($data['email'])
-                ->setLt($data['lt'])
-                ->setLng($data['lng']);
+                ->setLt(doubleval($data['lt']))
+                ->setLng(doubleval($data['lng']));
         }
-
+        return null;
     }
+
+
+
 }

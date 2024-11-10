@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'versions')]
+#[ORM\Table(name: 'versions', options: ["comment" => "Tabla para almacenar las versiones de los modelos de los anuncios"])]
 #[ApiResource]
 class Version
 {
@@ -19,8 +19,26 @@ class Version
     #[ORM\ManyToOne(targetEntity: Model::class, inversedBy: 'versions')]
     private Model $model;
 
-    #[ORM\Column(type: 'string', length: 200)]
+    #[ORM\Column(type: 'string', name: 'name',length: 200, options: ["comment" => "Campo nombre visible de la version"])]
     private string $name;
+
+    /**
+     * @var Collection<int, Advertisement>
+     */
+    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'versionObject')]
+    private Collection $advertisements;
+
+    /**
+     * @var Collection<int, Site>
+     */
+    #[ORM\ManyToMany(targetEntity: Site::class, inversedBy: 'versions')]
+    private Collection $sites;
+
+    public function __construct()
+    {
+        $this->advertisements = new ArrayCollection();
+        $this->sites = new ArrayCollection();
+    }
 
 
     /**
@@ -70,6 +88,60 @@ class Version
     public function __toString():string
     {
         return $this->name;
+    }
+
+    /**
+     * @return Collection<int, Advertisement>
+     */
+    public function getAdvertisements(): Collection
+    {
+        return $this->advertisements;
+    }
+
+    public function addAdvertisement(Advertisement $advertisement): static
+    {
+        if (!$this->advertisements->contains($advertisement)) {
+            $this->advertisements->add($advertisement);
+            $advertisement->setVersionObject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAdvertisement(Advertisement $advertisement): static
+    {
+        if ($this->advertisements->removeElement($advertisement)) {
+            // set the owning side to null (unless already changed)
+            if ($advertisement->getVersionObject() === $this) {
+                $advertisement->setVersionObject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Site>
+     */
+    public function getSites(): Collection
+    {
+        return $this->sites;
+    }
+
+    public function addSite(Site $site): static
+    {
+        if (!$this->sites->contains($site)) {
+            $this->sites->add($site);
+        }
+
+        return $this;
+    }
+
+    public function removeSite(Site $site): static
+    {
+        $this->sites->removeElement($site);
+
+        return $this;
     }
 
 

@@ -6,7 +6,7 @@ use App\Repository\RolRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RolRepository::class)]
-#[ORM\Table(name: 'roles')]
+#[ORM\Table(name: 'roles', options: ["comment" => "Tabla para almacenar los roles de las credenciales de acceso a APICORE"])]
 class Rol
 {
     #[ORM\Id]
@@ -14,14 +14,15 @@ class Rol
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(type: 'string', name: 'name', length: 80, options: ["comment" => "Campo nombre visible del rol"])]
     private ?string $name = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(type: 'string', name:'rol', length: 80, options: ["comment" => "Campo nombre interno del rol"])]
     private ?string $rol = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', name:'description', length: 255, nullable: true, options: ["comment" => "Campo nombre interno del rol"])]
     private ?string $description = null;
+
 
     public function getId(): ?int
     {
@@ -48,7 +49,6 @@ class Rol
     public function setRol(string $rol): static
     {
         $this->rol = $rol;
-
         return $this;
     }
 
@@ -60,7 +60,6 @@ class Rol
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 }

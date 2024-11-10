@@ -2,15 +2,15 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Repository\ConfigurationParameterRepository;
+use App\Repository\ConfigValueRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ConfigurationParameterRepository::class)]
-#[ORM\Table(name: "configuration_parameters")]
+#[ORM\Entity(repositoryClass: ConfigValueRepository::class)]
+#[ORM\Table(name: "config_values")]
 #[ORM\Index(columns: ["name"], name: "idx_nombre_paramt_config")]
 #[ApiResource]
 
-class ConfigurationParameter
+class ConfigValue
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -35,9 +35,9 @@ class ConfigurationParameter
      * @param string $name
      * @param string $type
      * @param string|null $valueStr
-     * @return ConfigurationParameter
+     * @return ConfigValue
      */
-    public function initialize(string $name, string $type, ?string $valueStr): ConfigurationParameter
+    public function initialize(string $name, string $type, ?string $valueStr): ConfigValue
     {
         $this->name = $name;
         $this->type = $type;
@@ -60,9 +60,9 @@ class ConfigurationParameter
 
     /**
      * @param string $name
-     * @return ConfigurationParameter
+     * @return ConfigValue
      */
-    public function setName(string $name): ConfigurationParameter
+    public function setName(string $name): ConfigValue
     {
         $this->name = $name;
         return $this;
@@ -78,9 +78,9 @@ class ConfigurationParameter
 
     /**
      * @param string $type
-     * @return ConfigurationParameter
+     * @return ConfigValue
      */
-    public function setType(string $type): ConfigurationParameter
+    public function setType(string $type): ConfigValue
     {
         $this->type = $type;
         return $this;
@@ -96,9 +96,9 @@ class ConfigurationParameter
 
     /**
      * @param string|null $valueStr
-     * @return ConfigurationParameter
+     * @return ConfigValue
      */
-    public function setValueStr(?string $valueStr): ConfigurationParameter
+    public function setValueStr(?string $valueStr): ConfigValue
     {
         $this->valueStr = $valueStr;
         return $this;

@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'dealers')]
+#[ORM\Table(name: 'dealers', options: ["comment" => "Tabla para almacenar dealers (Concesionarios)"])]
 #[ApiResource]
 class Dealer
 {
@@ -16,23 +16,39 @@ class Dealer
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'mfid', type: 'integer')]
+    #[ORM\Column(type: 'integer', name: 'mfid', options: ["comment" => "Campo mfid, contiene el id usado en motorflash"])]
     private int $mfid;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', name: 'name',length: 200, options: ["comment" => "Campo nombre visible del dealer (Concesionario)"])]
     private string $name;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', name: 'type',length: 200, options: ["comment" => "Campo tipo de dealer (Concesionario)"])]
     private string $type;
 
-    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'dealer', cascade: ['persist'])]
+    /**
+     * @var Collection<int, Advertisement>
+     */
+    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'dealer', orphanRemoval: true)]
     private Collection $advertisements;
+
+    /**
+     * @var Collection<int, Shop>
+     */
+    #[ORM\OneToMany(targetEntity: Shop::class, mappedBy: 'dealer', orphanRemoval: true)]
+    private Collection $shops;
+
+    /**
+     * @var Collection<int, Site>
+     */
+    #[ORM\ManyToMany(targetEntity: Site::class, inversedBy: 'dealers')]
+    private Collection $sites;
 
     public function __construct()
     {
         $this->advertisements = new ArrayCollection();
+        $this->shops = new ArrayCollection();
+        $this->sites = new ArrayCollection();
     }
-
 
 
     /**
@@ -126,6 +142,90 @@ class Dealer
         $this->setMfid($data['dealer']['mfid']);
         $this->setName($data['dealer']['name']);
         $this->setType($data['dealer']['type']);
+    }
+
+    /**
+     * @return Collection<int, Advertisement>
+     */
+    public function getAdvertisements(): Collection
+    {
+        return $this->advertisements;
+    }
+
+    public function addAdvertisement(Advertisement $advertisement): static
+    {
+        if (!$this->advertisements->contains($advertisement)) {
+            $this->advertisements->add($advertisement);
+            $advertisement->setDealer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAdvertisement(Advertisement $advertisement): static
+    {
+        if ($this->advertisements->removeElement($advertisement)) {
+            // set the owning side to null (unless already changed)
+            if ($advertisement->getDealer() === $this) {
+                $advertisement->setDealer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Shop>
+     */
+    public function getShops(): Collection
+    {
+        return $this->shops;
+    }
+
+    public function addShop(Shop $shop): static
+    {
+        if (!$this->shops->contains($shop)) {
+            $this->shops->add($shop);
+            $shop->setDealer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeShop(Shop $shop): static
+    {
+        if ($this->shops->removeElement($shop)) {
+            // set the owning side to null (unless already changed)
+            if ($shop->getDealer() === $this) {
+                $shop->setDealer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Site>
+     */
+    public function getSites(): Collection
+    {
+        return $this->sites;
+    }
+
+    public function addSite(Site $site): static
+    {
+        if (!$this->sites->contains($site)) {
+            $this->sites->add($site);
+        }
+
+        return $this;
+    }
+
+    public function removeSite(Site $site): static
+    {
+        $this->sites->removeElement($site);
+
+        return $this;
     }
 
 }

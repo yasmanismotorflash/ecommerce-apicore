@@ -1,7 +1,7 @@
 <?php
 namespace App\Services\Comun;
 
-use App\Entity\ConfigurationParameter;
+use App\Entity\ConfigValue;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Services\Comun\SimpleLog;
 
@@ -40,7 +40,7 @@ class Configuration
         $parameter = $this->getParameter($parameterName);
         if(!$parameter)
         {
-            $parametro = new ConfigurationParameter();
+            $parametro = new ConfigValue();
             $parametro->initialize($parameterName,$parameterType,(string)$parameterValue);
             $this->entityManager->persist($parametro);
             $this->entityManager->flush();
@@ -57,9 +57,9 @@ class Configuration
 
 
     //Obtiene un parametro de configuracion almacenado especificando su nombre
-    public function getParameter(string $parameterName):?ConfigurationParameter
+    public function getParameter(string $parameterName):?ConfigValue
     {
-        $repositorio = $this->entityManager->getRepository(ConfigurationParameter::class);
+        $repositorio = $this->entityManager->getRepository(ConfigValue::class);
         $parameter = $repositorio->findOneByName($parameterName);
 
         if ($this->debug)

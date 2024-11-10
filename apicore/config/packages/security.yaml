@@ -2,17 +2,17 @@
 security:
     # https://symfony.com/doc/current/security.html#c-hashing-passwords
     password_hashers:
-        App\Entity\User: 'auto'
+        App\Entity\Credential: 'auto'
 
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
         # used to reload user from session & other features (e.g. switch_user)
         users:
             entity:
-                class: App\Entity\User
+                class: App\Entity\Credential
                 property: email
             # mongodb:
-            #    class: App\Document\User
+            #    class: App\Document\Credential
             #    property: email
 
     firewalls:

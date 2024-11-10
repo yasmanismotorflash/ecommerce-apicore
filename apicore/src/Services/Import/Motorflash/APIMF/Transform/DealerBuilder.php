@@ -35,6 +35,7 @@ class  DealerBuilder implements BuilderInterface
                 ->setName($data['name'])
                 ->setType($data['type']);
         }
+        return null;
     }
 
 }

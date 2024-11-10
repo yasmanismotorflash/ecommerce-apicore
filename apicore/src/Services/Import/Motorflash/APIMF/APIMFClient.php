@@ -2,6 +2,7 @@
 namespace App\Services\Import\Motorflash\APIMF;
 
 use App\Services\Comun\Configuration;
+use App\Services\Comun\SimpleLog;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -20,12 +21,20 @@ class APIMFClient
 
     private bool $debug;
 
+    private Configuration $config;
 
-    public function __construct(Configuration $config, HttpClientInterface $httpClient)
+    private SimpleLog $log;
+
+
+    public function __construct(Configuration $config, SimpleLog $log, HttpClientInterface $httpClient)
     {
         $config->configure();
+        $this->config = $config;
+        $log->configure(true,'apimfclient',true);
+        $this->log = $log;
         $this->apiMfUrl = $config->getParameter('API-MF-URL')->getValue();
         $this->httpClient = $httpClient;
+        $this->debug =  boolval($_ENV['APP_DEBUG']);
     }
 
 
@@ -47,10 +56,16 @@ class APIMFClient
         $endpoint = $this->apiMfUrl . '/api/token';
         $payload = ['client_id' => $this->apiMfClientId, 'client_secret' => $this->apiMfClientSecret];
         $response = $this->httpClient->request('POST', $endpoint, ['json' => $payload]);
-        if ($response->getStatusCode() === 200)
+        $this->debug('Solicitando Token de acceso');
+
+        if ($response->getStatusCode() === 200){
             $this->token = json_decode($response->getContent(), true)['access_token'];
-        else
+            $this->debug('Token de acceso recibido: '.$this->token);
+        }
+        else{
             $this->token = '';
+            $this->debug('no hay token de acceso. ', 'error');
+        }
     }
 
 
@@ -194,6 +209,26 @@ class APIMFClient
     {
         $this->apiMfClientSecret = $apiMfClientSecret;
         return $this;
+    }
+
+    private function debug(string $message, string $type='info')
+    {
+        if($this->debug){
+            switch ($type) {
+                case 'info':
+                    $this->log->info($message);
+                    break;
+                case 'warn':
+                    $this->log->warn($message);
+                    break;
+                case 'error':
+                    $this->log->error($message);
+                    break;
+                default:
+                    $this->log->log($message);
+            }
+        }
+
     }
 
 }
