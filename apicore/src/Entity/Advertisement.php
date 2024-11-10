@@ -5,11 +5,16 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Serializer\Filter\PropertyFilter;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'advertisements')]
-#[ApiResource]
-
+#[ApiResource( paginationItemsPerPage: 40)]
+#[ApiFilter(PropertyFilter::class)]
 class Advertisement
 {
     #[ORM\Id]
@@ -17,6 +22,10 @@ class Advertisement
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
+
+    /**
+     * ID de anuncio de Motorflash
+     * */
     #[ORM\Column(name: 'mfid', type: 'integer')]
     private int $mfid;
 
@@ -26,24 +35,30 @@ class Advertisement
     #[ORM\Column(type: 'string', length: 50)]
     private string $available;
 
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 100)]
     private string $name;
 
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $make;
 
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $model;
 
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $version;
 
     #[ORM\Column(type: 'string', length: 100)]
     private string $finish;
 
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 17)]
     private string $vin;
 
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 20)]
     private string $plate;
 
@@ -65,27 +80,33 @@ class Advertisement
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $lastUpdate;
 
+    #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'integer')]
     private int $daysPublished;
 
     #[ORM\Column(type: 'string', length: 20)]
     private string $jato;
 
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 20)]
     private string $typnatcode;
 
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $internalRef;
 
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private ?string $origen;
 
 
 
 
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $status;
 
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $typeVehicle;
 
@@ -98,28 +119,36 @@ class Advertisement
     #[ORM\Column(type: 'boolean')]
     private bool $iva;
 
+    #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private float $price;
 
+    #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private float $financedPrice;
 
+    #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private float $purchasePrice;
 
+    #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private float $priceNew;
 
 
+    #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'integer')]
     private int $km;
 
+    #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'string', length: 10)]
     private string $cv;
 
+    #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'string', length: 10)]
     private string $kw;
 
+    #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'integer')]
     private int $cc;
 
@@ -129,15 +158,19 @@ class Advertisement
     #[ORM\Column(type: 'string', length: 50)]
     private string $tires_back;
 
+
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private string $fuel;
 
 
 
 
+    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $color;
 
+    #[ApiFilter(BooleanFilter::class)]
     #[ORM\Column(type: 'boolean')]
     private bool $freeAccidents;
 

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Command;
 
 use Symfony\Component\Console\Command\Command;
@@ -107,7 +106,11 @@ class ImportAdsCommand extends Command
             $ads = $responseData['advertisements'] ?? [];
 
             foreach ($ads as $ad) {
+                gc_enable();
                 $advertisement = AdvertisementBuilder::buildFromArray($ad);
+
+                if(!$advertisement)
+                    continue;
 
                 // Asociar Dealer
                 $dealer = $this->getOrCreateDealer($ad['dealer']);
@@ -125,7 +128,7 @@ class ImportAdsCommand extends Command
                     $this->entityManager->persist($advertisement);
                     $this->entityManager->flush();
                 }
-
+                gc_collect_cycles();
                 // $this->io->text("Anuncio ID {$ad['id']} - Dealer: {$dealer->getMfid()}, Shop: {$shop->getMfid()}".", Images: ". count($images) );
             }
             $this->io->text("Procesada página: " . $page . " de " . $pages);
