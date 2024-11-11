@@ -218,11 +218,11 @@ class Advertisement
     private Collection $sites;
 
     #[ORM\ManyToOne(inversedBy: 'advertisements')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Dealer $dealer = null;
 
     #[ORM\ManyToOne(inversedBy: 'advertisements')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Shop $shop = null;
 
     /**
@@ -859,10 +859,9 @@ class Advertisement
         return $this->video;
     }
 
-    public function setVideo(Video $video): static
+    public function setVideo(?Video $video): static
     {
-        // set the owning side of the relation if necessary
-        if ($video->getAdvertisement() !== $this) {
+        if($video && $video->getAdvertisement() !== $this) {
             $video->setAdvertisement($this);
         }
         $this->video = $video;

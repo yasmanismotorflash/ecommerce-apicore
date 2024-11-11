@@ -23,28 +23,24 @@ class Model
     private Make $make;
 
     /**
-     * @var Collection<int, Model>
-     */
-    #[ORM\OneToMany(targetEntity: Version::class, mappedBy: 'model')]
-    private Collection $versions;
-
-    /**
-     * @var Collection<int, Advertisement>
-     */
-    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'modelObject')]
-    private Collection $advertisements;
-
-    /**
      * @var Collection<int, Site>
      */
     #[ORM\ManyToMany(targetEntity: Site::class, inversedBy: 'models')]
     private Collection $sites;
 
+    /**
+     * @var Collection<int, Model>
+     */
+    #[ORM\OneToMany(targetEntity: Version::class, mappedBy: 'model')]
+    private Collection $versions;
+
+
+
+
     public function __construct()
     {
-        $this->versions = new ArrayCollection();
-        $this->advertisements = new ArrayCollection();
         $this->sites = new ArrayCollection();
+        $this->versions = new ArrayCollection();
     }
 
     /**
@@ -109,35 +105,7 @@ class Model
         return $this->name;
     }
 
-    /**
-     * @return Collection<int, Advertisement>
-     */
-    public function getAdvertisements(): Collection
-    {
-        return $this->advertisements;
-    }
 
-    public function addAdvertisement(Advertisement $advertisement): static
-    {
-        if (!$this->advertisements->contains($advertisement)) {
-            $this->advertisements->add($advertisement);
-            $advertisement->setModelObject($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAdvertisement(Advertisement $advertisement): static
-    {
-        if ($this->advertisements->removeElement($advertisement)) {
-            // set the owning side to null (unless already changed)
-            if ($advertisement->getModelObject() === $this) {
-                $advertisement->setModelObject(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Site>

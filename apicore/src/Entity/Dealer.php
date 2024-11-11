@@ -25,17 +25,6 @@ class Dealer
     #[ORM\Column(type: 'string', name: 'type',length: 200, options: ["comment" => "Campo tipo de dealer (Concesionario)"])]
     private string $type;
 
-    /**
-     * @var Collection<int, Advertisement>
-     */
-    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'dealer', orphanRemoval: true)]
-    private Collection $advertisements;
-
-    /**
-     * @var Collection<int, Shop>
-     */
-    #[ORM\OneToMany(targetEntity: Shop::class, mappedBy: 'dealer', orphanRemoval: true)]
-    private Collection $shops;
 
     /**
      * @var Collection<int, Site>
@@ -43,11 +32,23 @@ class Dealer
     #[ORM\ManyToMany(targetEntity: Site::class, inversedBy: 'dealers')]
     private Collection $sites;
 
+    /**
+     * @var Collection<int, Shop>
+     */
+    #[ORM\OneToMany(targetEntity: Shop::class, mappedBy: 'dealer' )]
+    private Collection $shops;
+
+    /**
+     * @var Collection<int, Advertisement>
+     */
+    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'dealer')]
+    private Collection $advertisements;
+
     public function __construct()
     {
-        $this->advertisements = new ArrayCollection();
-        $this->shops = new ArrayCollection();
         $this->sites = new ArrayCollection();
+        $this->shops = new ArrayCollection();
+        $this->advertisements = new ArrayCollection();
     }
 
 
@@ -177,7 +178,7 @@ class Dealer
     /**
      * @return Collection<int, Shop>
      */
-    public function getShops(): Collection
+    public function getShops(): ?Collection
     {
         return $this->shops;
     }

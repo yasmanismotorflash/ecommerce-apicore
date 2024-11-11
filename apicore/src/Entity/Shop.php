@@ -57,15 +57,6 @@ class Shop
     #[ORM\Column(type: 'decimal', name: 'lng', precision: 11, scale: 8, nullable: true, options: ["comment" => "Campo ubicación longitud de la shop (Tienda)"])]
     private ?string $lng;
 
-    #[ORM\ManyToOne(inversedBy: 'shops')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Dealer $dealer = null;
-
-    /**
-     * @var Collection<int, Advertisement>
-     */
-    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'shop', orphanRemoval: true)]
-    private Collection $advertisements;
 
     /**
      * @var Collection<int, Site>
@@ -73,7 +64,15 @@ class Shop
     #[ORM\ManyToMany(targetEntity: Site::class, inversedBy: 'shops')]
     private Collection $sites;
 
+    #[ORM\ManyToOne(inversedBy: 'shops')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Dealer $dealer = null;
 
+    /**
+     * @var Collection<int, Advertisement>
+     */
+    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'shop', orphanRemoval: true)]
+    private Collection $advertisements;
 
 
     public function __construct()

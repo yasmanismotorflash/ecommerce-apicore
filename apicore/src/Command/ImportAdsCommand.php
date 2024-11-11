@@ -125,32 +125,27 @@ class ImportAdsCommand extends Command
             $ads = $responseData['advertisements'] ?? [];
 
             foreach ($ads as $ad) {
-                  gc_enable();
+                gc_enable();
+
+                $dealer = $this->getOrCreateDealer($ad['dealer']);
+                $shop = $this->getOrCreateShop($ad['shop']);
+                $images = $this->processImages($ad['images']);
+                $video = VideoBuilder::buildFromString($ad['video']);
 
                 $advertisement = AdvertisementBuilder::buildFromArray($ad);
 
                 if(!$advertisement)
                     continue;
 
-                // Asociar Dealer
-                $dealer = $this->getOrCreateDealer($ad['dealer']);
                 $advertisement->setDealer($dealer);
-
-                // Asociar Shop
-                $shop = $this->getOrCreateShop($ad['shop']);
                 $advertisement->setShop($shop);
-
-                $images = $this->processImages($ad['images']);
                 $advertisement->setImages($images);
+                $advertisement->setVideo($video);
 
-                $video = VideoBuilder::buildFromString($ad['video']);
-                if($video){
-                    $advertisement->setVideo($video);
-                }
+                $this->entityManager->persist($advertisement);
 
                 // Si no es dryrun, persistimos y guardamos los cambios.
                 if (!$this->dryrun) {
-                    $this->entityManager->persist($advertisement);
                     $this->entityManager->flush();
                 }
 

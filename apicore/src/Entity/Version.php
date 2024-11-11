@@ -36,7 +36,6 @@ class Version
 
     public function __construct()
     {
-        $this->advertisements = new ArrayCollection();
         $this->sites = new ArrayCollection();
     }
 

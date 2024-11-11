@@ -18,17 +18,6 @@ class Make
     #[ORM\Column(type: 'string', name: 'name',length: 120, options: ["comment" => "Campo nombre visible de la marca"])]
     private string $name;
 
-    /**
-     * @var Collection<int, Model>
-     */
-    #[ORM\OneToMany(targetEntity: Model::class, mappedBy: 'make')]
-    private Collection $models;
-
-    /**
-     * @var Collection<int, Advertisement>
-     */
-    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'makeObject')]
-    private Collection $advertisements;
 
     /**
      * @var Collection<int, Site>
@@ -36,11 +25,19 @@ class Make
     #[ORM\ManyToMany(targetEntity: Site::class, inversedBy: 'makes')]
     private Collection $sites;
 
+    /**
+     * @var Collection<int, Model>
+     */
+    #[ORM\OneToMany(targetEntity: Model::class, mappedBy: 'make')]
+    private Collection $models;
+
+
+
+
     public function __construct()
     {
-        $this->models = new ArrayCollection();
-        $this->advertisements = new ArrayCollection();
         $this->sites = new ArrayCollection();
+        $this->models = new ArrayCollection();
     }
 
     /**
