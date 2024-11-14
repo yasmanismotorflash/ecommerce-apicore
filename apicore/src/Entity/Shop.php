@@ -57,13 +57,6 @@ class Shop
     #[ORM\Column(type: 'decimal', name: 'lng', precision: 11, scale: 8, nullable: true, options: ["comment" => "Campo ubicación longitud de la shop (Tienda)"])]
     private ?string $lng;
 
-
-    /**
-     * @var Collection<int, Site>
-     */
-    #[ORM\ManyToMany(targetEntity: Site::class, inversedBy: 'shops')]
-    private Collection $sites;
-
     #[ORM\ManyToOne(inversedBy: 'shops')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Dealer $dealer = null;
@@ -78,7 +71,6 @@ class Shop
     public function __construct()
     {
         $this->advertisements = new ArrayCollection();
-        $this->sites = new ArrayCollection();
     }
 
 
@@ -369,29 +361,6 @@ class Shop
         return $this;
     }
 
-    /**
-     * @return Collection<int, Site>
-     */
-    public function getSites(): Collection
-    {
-        return $this->sites;
-    }
-
-    public function addSite(Site $site): static
-    {
-        if (!$this->sites->contains($site)) {
-            $this->sites->add($site);
-        }
-
-        return $this;
-    }
-
-    public function removeSite(Site $site): static
-    {
-        $this->sites->removeElement($site);
-
-        return $this;
-    }
 
 
 }

@@ -1,9 +1,11 @@
 <?php
 namespace App\Services\Import\Motorflash\APIMF\Transform;
 
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Site;
 use App\Entity\Image;
 
-class  ImageBuilder
+class ImageBuilder
 {
 
     static function validateString(string $url): bool {
@@ -19,6 +21,17 @@ class  ImageBuilder
             return $entity->setUrl($url);
         }
         return null;
+    }
+
+
+    private function processImages(array $imagesData): array
+    {
+        $images = [];
+        foreach ($imagesData as $url) {
+            $image = ImageBuilder::buildFromString($url);
+            $images[] = $image;
+        }
+        return $images;
     }
 
 }

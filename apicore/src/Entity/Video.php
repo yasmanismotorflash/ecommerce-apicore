@@ -21,10 +21,6 @@ class Video
     #[ORM\Column(type: 'string', name: 'urlhash',length: 40, options: ["comment" => "Campo hash de la url del video"])]
     private ?string $urlhash = null;
 
-    #[ORM\OneToOne(mappedBy: 'video', cascade: ['persist', 'remove'])]
-    private ?Advertisement $advertisement = null;
-
-
 
 
     public function getId(): ?int
@@ -53,28 +49,6 @@ class Video
     public function setUrlhash(string $urlhash): Video
     {
         $this->urlhash = $urlhash;
-        return $this;
-    }
-
-    public function getAdvertisement(): ?Advertisement
-    {
-        return $this->advertisement;
-    }
-
-    public function setAdvertisement(?Advertisement $advertisement): static
-    {
-        // unset the owning side of the relation if necessary
-        if ($advertisement === null && $this->advertisement !== null) {
-            $this->advertisement->setVideo(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($advertisement !== null && $advertisement->getVideo() !== $this) {
-            $advertisement->setVideo($this);
-        }
-
-        $this->advertisement = $advertisement;
-
         return $this;
     }
 

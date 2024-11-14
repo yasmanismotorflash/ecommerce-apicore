@@ -22,11 +22,6 @@ class Model
     #[ORM\ManyToOne(targetEntity: Make::class, inversedBy: 'models')]
     private Make $make;
 
-    /**
-     * @var Collection<int, Site>
-     */
-    #[ORM\ManyToMany(targetEntity: Site::class, inversedBy: 'models')]
-    private Collection $sites;
 
     /**
      * @var Collection<int, Model>
@@ -39,7 +34,6 @@ class Model
 
     public function __construct()
     {
-        $this->sites = new ArrayCollection();
         $this->versions = new ArrayCollection();
     }
 
@@ -105,31 +99,6 @@ class Model
         return $this->name;
     }
 
-
-
-    /**
-     * @return Collection<int, Site>
-     */
-    public function getSites(): Collection
-    {
-        return $this->sites;
-    }
-
-    public function addSite(Site $site): static
-    {
-        if (!$this->sites->contains($site)) {
-            $this->sites->add($site);
-        }
-
-        return $this;
-    }
-
-    public function removeSite(Site $site): static
-    {
-        $this->sites->removeElement($site);
-
-        return $this;
-    }
 
 
 }

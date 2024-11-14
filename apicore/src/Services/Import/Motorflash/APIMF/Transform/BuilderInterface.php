@@ -1,6 +1,8 @@
 <?php
 namespace App\Services\Import\Motorflash\APIMF\Transform;
 
+use Doctrine\ORM\EntityManagerInterface;
+
 interface BuilderInterface
 {
     static function validateJson(string $json): bool;
@@ -9,6 +11,6 @@ interface BuilderInterface
 
     static function buildFromJson(string $json): ?object;
 
-    static function buildFromArray(array $data): ?object;
+    static function buildFromArray(EntityManagerInterface $em, array $data): ?object;
 
 }

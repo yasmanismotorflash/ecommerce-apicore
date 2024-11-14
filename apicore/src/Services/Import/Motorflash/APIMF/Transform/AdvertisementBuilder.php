@@ -1,19 +1,192 @@
 <?php
 namespace App\Services\Import\Motorflash\APIMF\Transform;
 
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Site;
 use App\Entity\Advertisement;
 use App\Entity\Dealer;
 use App\Entity\Shop;
 
-class AdvertisementBuilder implements BuilderInterface
-{
 
-    static function validateJson(string $json): bool {
-        $data = json_decode($json, true);
-        if (json_last_error() !== JSON_ERROR_NONE)
-            return false;
-        return AdvertisementBuilder::validateArray($data);
+class AdvertisementBuilder
+{
+    /**
+     * Obtener anuncio a partir de datos pasados en arreglo
+ * @param EntityManagerInterface $em
+     * @param Site $site
+     * @param array|null $ad
+     * @return Advertisement|null devuelve un objeto Advertisement o null según los siguientes casos.
+     *  - sino existe se creará uno nuevo a partir de los datos pasados,
+     *  - si existe se actualiza con los datos pasados,
+     *  - si el arreglo proporcionado no es válido devuelve null
+     */
+    static function getAdvertisement(EntityManagerInterface $em, Site $site, ?array $ad): ?Advertisement {
+        if(isset($ad['id'])) {
+            $adverteisement = $em->getRepository(Advertisement::class)->findOneByMfid($ad['id']);
+            if($adverteisement){
+                return AdvertisementBuilder::updateAdvertisement($em, $site, $adverteisement, $ad);
+            }
+            return AdvertisementBuilder::createAdvertisement($em, $site, $ad);
+        }
+        return null;
     }
+
+
+    static function updateAdvertisement(EntityManagerInterface $em, Site $site, Advertisement $advertisement, ?array $data): ?Advertisement {
+        if(AdvertisementBuilder::validateArray($data)) {
+            // ToDo: Actualizar entidad con todos los datos disponibles en el arreglo y llenar el registro de cmabios
+            if(isset($data['id'])) { $advertisement->setMfid($data['id']);}
+            if(isset($data['published'])) { $advertisement->setPublished($data['published']);}
+            if(isset($data['available'])) { $advertisement->setAvailable($data['available']);}
+
+            if(isset($data['name'])) { $advertisement->setName($data['name']);}
+            if(isset($data['make'])) { $advertisement->setMake($data['make']);}
+            if(isset($data['model'])) { $advertisement->setModel($data['model']);}
+            if(isset($data['version'])) { $advertisement->setVersion($data['version']);}
+            if(isset($data['finish'])) { $advertisement->setFinish($data['finish']);}
+
+            if(isset($data['vin'])) { $advertisement->setVin($data['vin']);}
+            if(isset($data['plate'])) { $advertisement->setPlate($data['plate']);}
+            if(isset($data['registrationDate'])) { $advertisement->setRegistrationDate(\DateTime::createFromFormat('Y-m-d', $data['registrationDate']));}
+
+            // ToDo: faltan algunos campos fecha
+
+            if(isset($data['daysPublished'])) { $advertisement->setDaysPublished($data['daysPublished']);}
+            if(isset($data['jato'])) { $advertisement->setJato($data['jato']);}
+            if(isset($data['typnatcode'])) { $advertisement->setTypnatcode($data['typnatcode']);}
+            if(isset($data['internalRef'])) { $advertisement->setInternalRef($data['internalRef']);}
+            if(isset($data['origen'])) { $advertisement->setOrigen($data['origen']);}
+
+            //if(isset($data['dealer'])) {
+            $dealer = DealerBuilder::getDealer($em,$site, $data['dealer']);
+            $advertisement->setDealer($dealer);
+            //}
+
+            //if(isset($data['shop'])) {
+            $shop = ShopBuilder::getShop($em,$site, $dealer, $data['shop']);
+            //$shop->setDealer($dealer);
+            $advertisement->setShop($shop);
+            //}
+
+            //if(isset($data['images'])) { $entity->setImages($data['images']);}
+
+            if(isset($data['status'])) { $advertisement->setStatus($data['status']);}
+            if(isset($data['typeVehicle'])) { $advertisement->setTypeVehicle($data['typeVehicle']);}
+            if(isset($data['bodyType'])) { $advertisement->setBodyType($data['bodyType']);}
+            if(isset($data['bodyTypeEs'])) { $advertisement->setBodyTypeEs($data['bodyTypeEs']);}
+            if(isset($data['iva'])) { $advertisement->setIva($data['iva']);}
+
+            if(isset($data['price'])) { $advertisement->setPrice((float)$data['price']);}
+            if(isset($data['financedPrice'])) { $advertisement->setFinancedPrice((float)$data['financedPrice']);}
+            if(isset($data['purchasePrice'])) { $advertisement->setPurchasePrice((float)$data['purchasePrice']);}
+            if(isset($data['priceNew'])) { $advertisement->setPriceNew((float)$data['priceNew']);}
+
+            if(isset($data['km'])) { $advertisement->setKm((int)$data['km']);}
+            if(isset($data['cv'])) { $advertisement->setCv((int)$data['cv']);}
+            if(isset($data['kw'])) { $advertisement->setKw((int)$data['kw']);}
+            if(isset($data['cc'])) { $advertisement->setCc((int)$data['cc']);}
+
+            if(isset($data['tires_front'])) { $advertisement->setTiresFront($data['tires_front']);}
+            if(isset($data['tires_back'])) { $advertisement->setTiresBack($data['tires_back']);}
+            if(isset($data['color'])) { $advertisement->setColor($data['color']);}
+            if(isset($data['freeAccidents'])) { $advertisement->setFreeAccidents($data['freeAccidents']);}
+            if(isset($data['gearbox'])) { $advertisement->setGearbox($data['gearbox']);}
+            if(isset($data['number_of_gears'])) { $advertisement->setNumberOfGears(intval($data['number_of_gears']));}
+            if(isset($data['doors'])) { $advertisement->setDoors(intval($data['doors']));}
+            if(isset($data['seats'])) { $advertisement->setSeats(intval($data['seats']));}
+            if(isset($data['environmentalBadge'])) { $advertisement->setEnvironmentalBadge($data['environmentalBadge']);}
+            if(isset($data['warrantyDuration'])) { $advertisement->setWarrantyDuration(intval($data['warrantyDuration']));}
+
+            //  ToDo: Validar si el anuncio está en el sitio especificado, si no está agregarlo
+            //$adverteisement->addSite($site);
+
+            $em->persist($advertisement);
+            return $advertisement;
+        }
+        // ToDo: Mostrar error en pantalla y log , pasar el output
+        return null;
+    }
+
+
+
+    static function createAdvertisement(EntityManagerInterface $em, Site $site, ?array $data): ?Advertisement {
+         if(AdvertisementBuilder::validateArray($data)) {
+             // ToDo: Crear entidad con todos los datos disponibles en el arreglo
+
+             $advertisement = new Advertisement();
+
+             if(isset($data['id'])) { $advertisement->setMfid($data['id']);}
+             if(isset($data['published'])) { $advertisement->setPublished($data['published']);}
+             if(isset($data['available'])) { $advertisement->setAvailable($data['available']);}
+
+             if(isset($data['name'])) { $advertisement->setName($data['name']);}
+             if(isset($data['make'])) { $advertisement->setMake($data['make']);}
+             if(isset($data['model'])) { $advertisement->setModel($data['model']);}
+             if(isset($data['version'])) { $advertisement->setVersion($data['version']);}
+             if(isset($data['finish'])) { $advertisement->setFinish($data['finish']);}
+
+             if(isset($data['vin'])) { $advertisement->setVin($data['vin']);}
+             if(isset($data['plate'])) { $advertisement->setPlate($data['plate']);}
+             if(isset($data['registrationDate'])) { $advertisement->setRegistrationDate(\DateTime::createFromFormat('Y-m-d', $data['registrationDate']));}
+
+             // ToDo: faltan algunos campos fecha
+
+             if(isset($data['daysPublished'])) { $advertisement->setDaysPublished($data['daysPublished']);}
+             if(isset($data['jato'])) { $advertisement->setJato($data['jato']);}
+             if(isset($data['typnatcode'])) { $advertisement->setTypnatcode($data['typnatcode']);}
+             if(isset($data['internalRef'])) { $advertisement->setInternalRef($data['internalRef']);}
+             if(isset($data['origen'])) { $advertisement->setOrigen($data['origen']);}
+
+             //if(isset($data['dealer'])) {
+                 $dealer = DealerBuilder::getDealer($em,$site, $data['dealer']);
+                 $advertisement->setDealer($dealer);
+             //}
+
+             //if(isset($data['shop'])) {
+                 $shop = ShopBuilder::getShop($em,$site, $dealer, $data['shop']);
+                 //$shop->setDealer($dealer);
+                 $advertisement->setShop($shop);
+             //}
+
+             //if(isset($data['images'])) { $entity->setImages($data['images']);}
+
+             if(isset($data['status'])) { $advertisement->setStatus($data['status']);}
+             if(isset($data['typeVehicle'])) { $advertisement->setTypeVehicle($data['typeVehicle']);}
+             if(isset($data['bodyType'])) { $advertisement->setBodyType($data['bodyType']);}
+             if(isset($data['bodyTypeEs'])) { $advertisement->setBodyTypeEs($data['bodyTypeEs']);}
+             if(isset($data['iva'])) { $advertisement->setIva($data['iva']);}
+
+             if(isset($data['price'])) { $advertisement->setPrice((float)$data['price']);}
+             if(isset($data['financedPrice'])) { $advertisement->setFinancedPrice((float)$data['financedPrice']);}
+             if(isset($data['purchasePrice'])) { $advertisement->setPurchasePrice((float)$data['purchasePrice']);}
+             if(isset($data['priceNew'])) { $advertisement->setPriceNew((float)$data['priceNew']);}
+
+             if(isset($data['km'])) { $advertisement->setKm((int)$data['km']);}
+             if(isset($data['cv'])) { $advertisement->setCv((int)$data['cv']);}
+             if(isset($data['kw'])) { $advertisement->setKw((int)$data['kw']);}
+             if(isset($data['cc'])) { $advertisement->setCc((int)$data['cc']);}
+
+             if(isset($data['tires_front'])) { $advertisement->setTiresFront($data['tires_front']);}
+             if(isset($data['tires_back'])) { $advertisement->setTiresBack($data['tires_back']);}
+             if(isset($data['color'])) { $advertisement->setColor($data['color']);}
+             if(isset($data['freeAccidents'])) { $advertisement->setFreeAccidents($data['freeAccidents']);}
+             if(isset($data['gearbox'])) { $advertisement->setGearbox($data['gearbox']);}
+             if(isset($data['number_of_gears'])) { $advertisement->setNumberOfGears(intval($data['number_of_gears']));}
+             if(isset($data['doors'])) { $advertisement->setDoors(intval($data['doors']));}
+             if(isset($data['seats'])) { $advertisement->setSeats(intval($data['seats']));}
+             if(isset($data['environmentalBadge'])) { $advertisement->setEnvironmentalBadge($data['environmentalBadge']);}
+             if(isset($data['warrantyDuration'])) { $advertisement->setWarrantyDuration(intval($data['warrantyDuration']));}
+
+             //  ToDo: Validar si el anuncio está en el sitio especificado, si no está agregarlo
+             //$adverteisement->addSite($site);
+
+             $em->persist($advertisement);
+             return $advertisement;
+         }
+         // ToDo: Mostrar error en pantalla y log , pasar el output
+         return null;
+    }
+
 
     static function validateArray(array $data): bool {
 
@@ -23,79 +196,8 @@ class AdvertisementBuilder implements BuilderInterface
             $data['version'], $data['finish'], $data['vin'],
             $data['plate'],
             //$data['finish'], $data['vin'],
+            // ToDo: Agregar otros campos que siempre deben venir para asumir que el arreglo contiene datos válidos.
         );
-
-    }
-
-
-    public static function buildFromJson(string $json): ?Advertisement {
-
-        if( AdvertisementBuilder::validateJson($json)) {
-            $data = json_decode($json, true);
-            return AdvertisementBuilder::buildFromArray($data);
-        }
-        return null;
-    }
-
-    static function buildFromArray(array $data): ?object  {
-        if( AdvertisementBuilder::validateArray($data)) {
-
-            $entity = new Advertisement();
-
-            return $entity->setMfid($data['id'])
-                ->setPublished($data['published'])
-                ->setAvailable($data['available'])
-                ->setName($data['name'])
-                ->setMake($data['make'])
-                ->setModel($data['model'])
-                ->setVersion($data['version'])
-                ->setFinish($data['finish'])
-                ->setVin($data['vin'])
-                ->setPlate($data['plate'])
-                ->setRegistrationDate(\DateTime::createFromFormat('Y-m-d', $data['registrationDate']))
-                //->setLastRegistrationDate(\DateTime::createFromFormat('Y-m-d', $data['lastRegistrationDate']))
-                //->setManufacturingDate(\DateTime::createFromFormat('Y-m-d', $data['manufacturingDate']))
-                //->setPublicationDate(\DateTime::createFromFormat('Y-m-d', $data['publicationDate']))
-                //->setModificationDate(\DateTime::createFromFormat('Y-m-d', $data['modificationDate']))
-                //->setLastUpdate(\DateTime::createFromFormat('Y-m-d', $data['lastUpdate']))
-                ->setDaysPublished($data['daysPublished'])
-                ->setJato($data['jato'])
-                ->setTypnatcode($data['typnatcode'])
-                ->setInternalRef($data['internalRef'])
-                ->setOrigen($data['origen'])
-                //->setDealer(DealerBuilder::buildFromArray($data['dealer']))
-                //->setShop(ShopBuilder::buildFromArray($data['shop']))
-                ->setStatus($data['status'])
-                ->setTypeVehicle($data['typeVehicle'])
-                ->setBodyType($data['bodyType'])
-                ->setBodyTypeEs($data['bodyTypeEs'])
-                ->setIva($data['iva'])
-                ->setPrice($data['price'])
-                ->setFinancedPrice($data['financedPrice'])
-                ->setPurchasePrice($data['purchasePrice'])
-                //->setPriceNew($data['priceNew'])   parcear a float
-                ->setKm($data['km'])
-                ->setCv($data['cv'])
-                ->setKw($data['kw'])
-                ->setCc((int)($data['cc']))
-                ->setTiresFront($data['tires_front'])
-                ->setTiresBack($data['tires_back'])
-                // ->setFuel($data['fuel'])    //ToDo Convertir a una entidad aparte
-
-                ->setColor($data['color'])
-                ->setFreeAccidents($data['freeAccidents'])
-                ->setGearbox($data['gearbox'])
-                ->setNumberOfGears($data['number_of_gears'])
-                ->setDoors($data['doors'])
-                ->setSeats($data['seats'])
-                ->setEnvironmentalBadge($data['environmentalBadge'])
-
-                ->setWarrantyDuration($data['warrantyDuration'])
-                //->set
-                ;
-
-        }
-        return null;
 
     }
 

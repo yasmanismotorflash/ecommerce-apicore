@@ -1,6 +1,8 @@
 <?php
 namespace App\Services\Import\Motorflash\APIMF\Transform;
 
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Site;
 use App\Entity\Video;
 
 class  VideoBuilder

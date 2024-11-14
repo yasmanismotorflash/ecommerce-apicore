@@ -26,11 +26,6 @@ class Dealer
     private string $type;
 
 
-    /**
-     * @var Collection<int, Site>
-     */
-    #[ORM\ManyToMany(targetEntity: Site::class, inversedBy: 'dealers')]
-    private Collection $sites;
 
     /**
      * @var Collection<int, Shop>
@@ -46,7 +41,6 @@ class Dealer
 
     public function __construct()
     {
-        $this->sites = new ArrayCollection();
         $this->shops = new ArrayCollection();
         $this->advertisements = new ArrayCollection();
     }
@@ -137,13 +131,6 @@ class Dealer
         ));
     }
 
-    public function fromJson(string $json):void
-    {
-        $data = json_decode($json, true);
-        $this->setMfid($data['dealer']['mfid']);
-        $this->setName($data['dealer']['name']);
-        $this->setType($data['dealer']['type']);
-    }
 
     /**
      * @return Collection<int, Advertisement>
@@ -201,30 +188,6 @@ class Dealer
                 $shop->setDealer(null);
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Site>
-     */
-    public function getSites(): Collection
-    {
-        return $this->sites;
-    }
-
-    public function addSite(Site $site): static
-    {
-        if (!$this->sites->contains($site)) {
-            $this->sites->add($site);
-        }
-
-        return $this;
-    }
-
-    public function removeSite(Site $site): static
-    {
-        $this->sites->removeElement($site);
 
         return $this;
     }

@@ -4,6 +4,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
@@ -204,56 +205,19 @@ class Advertisement
     private ?string $textLegal = null;
 
 
-
-
-
-
-
-
-
-    /**
-     * @var Collection<int, Site>
-     */
-    #[ORM\ManyToMany(targetEntity: Site::class, mappedBy: 'advertisements')]
-    private Collection $sites;
-
-    #[ORM\ManyToOne(inversedBy: 'advertisements')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(inversedBy: 'advertisements', cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Dealer $dealer = null;
 
-    #[ORM\ManyToOne(inversedBy: 'advertisements')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\ManyToOne(inversedBy: 'advertisements', cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Shop $shop = null;
 
-    /**
-     * @var Collection<int, Image>
-     */
-    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'advertisement', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $images;
-
-    #[ORM\OneToOne(inversedBy: 'advertisement', cascade: ['persist', 'remove'])]
-    private ?Video $video = null;
-
-
-
-    #[ORM\ManyToOne(inversedBy: 'advertisements')]
-    private ?Make $makeObject = null;
-
-    #[ORM\ManyToOne(inversedBy: 'advertisements')]
-    private ?Model $modelObject = null;
-
-    #[ORM\ManyToOne(inversedBy: 'advertisements')]
-    private ?Version $versionObject = null;
 
 
 
 
-    public function __construct()
-    {
-        $this->sites = new ArrayCollection();
-        $this->images = new ArrayCollection();
 
-    }
 
 
     public function getId(): ?int
@@ -611,7 +575,7 @@ class Advertisement
 
     public function setPriceNew(float $priceNew): Advertisement
     {
-        $this->priceNew = $priceNew;
+        $this->priceNew = $priceNew !== null ? (string)$priceNew : null;
         return $this;
     }
 
@@ -813,128 +777,16 @@ class Advertisement
         return $this;
     }
 
-    /**
-     * @return Collection<int, Image>
-     */
-    public function getImages(): Collection
-    {
-        return $this->images;
-    }
 
-    public function addImage(Image $image): Advertisement
-    {
-        if (!$this->images->contains($image)) {
-            $this->images->add($image);
-            $image->setAdvertisement($this);
-        }
 
-        return $this;
-    }
 
-    public function removeImage(Image $image): Advertisement
-    {
-        if ($this->images->removeElement($image)) {
-            // set the owning side to null (unless already changed)
-            if ($image->getAdvertisement() === $this) {
-                $image->setAdvertisement(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function setImages(array $images)
-    {
-        foreach ($this->images as $image){
-            $this->removeImage($image);
-        }
-        foreach ($images as $image){
-            $this->addImage($image);
-        }
-        return $this;
-    }
-
-    public function getVideo(): ?Video
-    {
-        return $this->video;
-    }
-
-    public function setVideo(?Video $video): static
-    {
-        if($video && $video->getAdvertisement() !== $this) {
-            $video->setAdvertisement($this);
-        }
-        $this->video = $video;
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Site>
-     */
-    public function getSites(): Collection
-    {
-        return $this->sites;
-    }
-
-    public function addSite(Site $site): static
-    {
-        if (!$this->sites->contains($site)) {
-            $this->sites->add($site);
-            $site->addAdvertisement($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSite(Site $site): static
-    {
-        if ($this->sites->removeElement($site)) {
-            $site->removeAdvertisement($this);
-        }
-
-        return $this;
-    }
 
     /*public function __toString():string
     {
         return 'Anuncio: '.$this->mfid.' Marca: '.$this->make.' Modelo: '.$this->model.' Version: '.$this->version;
     }*/
 
-    public function getMakeObject(): ?Make
-    {
-        return $this->makeObject;
-    }
 
-    public function setMakeObject(?Make $makeObject): static
-    {
-        $this->makeObject = $makeObject;
-
-        return $this;
-    }
-
-    public function getModelObject(): ?Model
-    {
-        return $this->modelObject;
-    }
-
-    public function setModelObject(?Model $modelObject): static
-    {
-        $this->modelObject = $modelObject;
-
-        return $this;
-    }
-
-    public function getVersionObject(): ?Version
-    {
-        return $this->versionObject;
-    }
-
-    public function setVersionObject(?Version $versionObject): static
-    {
-        $this->versionObject = $versionObject;
-
-        return $this;
-    }
 
 
 }
