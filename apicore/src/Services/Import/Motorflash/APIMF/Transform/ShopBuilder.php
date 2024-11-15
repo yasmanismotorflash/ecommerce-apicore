@@ -54,7 +54,7 @@ class ShopBuilder
             // ToDo: Crear entidad con todos los datos disponibles en el arreglo
 
             $shop = new Shop();
-            //$shop->addSite($site);
+            $shop->addSite($site);
             $shop->setDealer($dealer);
 
             if(isset($data['id'])) { $shop->setMfid($data['id']);}

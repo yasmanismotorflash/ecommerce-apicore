@@ -22,6 +22,9 @@ class Image
     #[ORM\Column(type: 'string', name: 'urlhash',length: 40, options: ["comment" => "Campo hash de la url de la imágen"])]
     private ?string $urlhash = null;
 
+    #[ORM\ManyToOne(inversedBy: 'images')]
+    private ?Advertisement $advertisement = null;
+
 
 
     public function getId(): ?int {
@@ -47,6 +50,17 @@ class Image
     public function setUrlhash(string $urlhash): Image
     {
         $this->urlhash = $urlhash;
+        return $this;
+    }
+
+    public function getAdvertisement(): ?Advertisement
+    {
+        return $this->advertisement;
+    }
+
+    public function setAdvertisement(?Advertisement $advertisement): static
+    {
+        $this->advertisement = $advertisement;
         return $this;
     }
 

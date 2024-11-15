@@ -24,7 +24,9 @@ class  DealerBuilder
     {
         if(DealerBuilder::validateArray($data)) {
             // ToDo: Actualizar entidad con todos los datos disponibles en el arreglo y llenar el registro de cambios
-
+            if(isset($data['id'])) { $dealer->setMfid($data['id']);}
+            if(isset($data['name'])) { $dealer->setName($data['name']);}
+            if(isset($data['type'])) { $dealer->setType($data['type']);}
 
             return $dealer;
         }
@@ -39,12 +41,14 @@ class  DealerBuilder
             // ToDo: Crear entidad con todos los datos disponibles en el arreglo
 
             $dealer = new Dealer();
+            $dealer->addSite($site);
+
             if(isset($data['id'])) { $dealer->setMfid($data['id']);}
             if(isset($data['name'])) { $dealer->setName($data['name']);}
             if(isset($data['type'])) { $dealer->setType($data['type']);}
 
             //  ToDo: Validar si el dealer está en el sitio especificado, si no está agregarlo
-            //$dealer->addSite($site);
+
             $em->persist($dealer);
             return $dealer;
         }

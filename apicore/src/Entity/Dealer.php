@@ -39,10 +39,17 @@ class Dealer
     #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'dealer')]
     private Collection $advertisements;
 
+    /**
+     * @var Collection<int, Site>
+     */
+    #[ORM\ManyToMany(targetEntity: Site::class, mappedBy: 'dealers')]
+    private Collection $sites;
+
     public function __construct()
     {
         $this->shops = new ArrayCollection();
         $this->advertisements = new ArrayCollection();
+        $this->sites = new ArrayCollection();
     }
 
 
@@ -187,6 +194,33 @@ class Dealer
             if ($shop->getDealer() === $this) {
                 $shop->setDealer(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Site>
+     */
+    public function getSites(): Collection
+    {
+        return $this->sites;
+    }
+
+    public function addSite(Site $site): static
+    {
+        if (!$this->sites->contains($site)) {
+            $this->sites->add($site);
+            $site->addDealer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSite(Site $site): static
+    {
+        if ($this->sites->removeElement($site)) {
+            $site->removeDealer($this);
         }
 
         return $this;

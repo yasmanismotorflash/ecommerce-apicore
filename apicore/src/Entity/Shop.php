@@ -67,10 +67,17 @@ class Shop
     #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'shop', orphanRemoval: true)]
     private Collection $advertisements;
 
+    /**
+     * @var Collection<int, Site>
+     */
+    #[ORM\ManyToMany(targetEntity: Site::class, mappedBy: 'shops')]
+    private Collection $sites;
+
 
     public function __construct()
     {
         $this->advertisements = new ArrayCollection();
+        $this->sites = new ArrayCollection();
     }
 
 
@@ -356,6 +363,33 @@ class Shop
             if ($advertisement->getShop() === $this) {
                 $advertisement->setShop(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Site>
+     */
+    public function getSites(): Collection
+    {
+        return $this->sites;
+    }
+
+    public function addSite(Site $site): static
+    {
+        if (!$this->sites->contains($site)) {
+            $this->sites->add($site);
+            $site->addShop($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSite(Site $site): static
+    {
+        if ($this->sites->removeElement($site)) {
+            $site->removeShop($this);
         }
 
         return $this;

@@ -7,104 +7,82 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'models', options: ["comment" => "Tabla para almacenar los modelos de los anuncios"])]
+#[ORM\Table(name: 'finishs', options: ["comment" => "Tabla para almacenar los acabados de los anuncios"])]
 #[ApiResource]
-class Model
+class Finish
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private int $id;
 
-    #[ORM\Column(type: 'string', name: 'name',length: 120, options: ["comment" => "Campo nombre visible del modelo"])]
+    #[ORM\ManyToOne(targetEntity: Model::class, inversedBy: 'versions')]
+    private Model $model;
+
+    #[ORM\Column(type: 'string', name: 'name',length: 50, options: ["comment" => "Campo nombre visible del acabado"])]
     private string $name;
-
-    #[ORM\ManyToOne(targetEntity: Make::class, inversedBy: 'models')]
-    private Make $make;
-
-
-    /**
-     * @var Collection<int, Model>
-     */
-    #[ORM\OneToMany(targetEntity: Version::class, mappedBy: 'model')]
-    private Collection $versions;
 
     /**
      * @var Collection<int, Advertisement>
      */
-    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'model')]
+    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'version')]
     private Collection $advertisements;
 
     /**
      * @var Collection<int, Site>
      */
-    #[ORM\ManyToMany(targetEntity: Site::class, mappedBy: 'models')]
+    #[ORM\ManyToMany(targetEntity: Site::class, mappedBy: 'finishs')]
     private Collection $sites;
 
 
-
-
-    public function __construct()
-    {
-        $this->versions = new ArrayCollection();
+    public function __construct() {
         $this->advertisements = new ArrayCollection();
         $this->sites = new ArrayCollection();
     }
 
+
+
     /**
-     * @return mixed
+     * @return int
      */
-    public function getId()
+    public function getId():int
     {
         return $this->id;
     }
 
-
-
     /**
      * @return mixed
      */
-    public function getName()
+    public function getModel(): Model
+    {
+        return $this->model;
+    }
+
+    /**
+     * @param Model $model
+     * @return Version
+     */
+    public function setModel( Model $model)
+    {
+        $this->model = $model;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName():string
     {
         return $this->name;
     }
 
     /**
      * @param mixed $name
-     * @return Model
+     * @return Version
      */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
-        return $this;
-    }
-
-    /**
-     * @return Make
-     */
-    public function getMake(): Make
-    {
-        return $this->make;
-    }
-
-    /**
-     * @param mixed $make
-     * @return Model
-     */
-    public function setMake($make)
-    {
-        $this->make = $make;
-        return $this;
-    }
-
-    public function getVersions(): Collection
-    {
-        return $this->versions;
-    }
-
-    public function setVersions(Collection $versions): Model
-    {
-        $this->versions = $versions;
         return $this;
     }
 
@@ -125,7 +103,7 @@ class Model
     {
         if (!$this->advertisements->contains($advertisement)) {
             $this->advertisements->add($advertisement);
-            $advertisement->setModel($this);
+            $advertisement->setFinish($this);
         }
 
         return $this;
@@ -135,8 +113,8 @@ class Model
     {
         if ($this->advertisements->removeElement($advertisement)) {
             // set the owning side to null (unless already changed)
-            if ($advertisement->getModel() === $this) {
-                $advertisement->setModel(null);
+            if ($advertisement->getFinish() === $this) {
+                $advertisement->setFinish(null);
             }
         }
 
@@ -155,7 +133,7 @@ class Model
     {
         if (!$this->sites->contains($site)) {
             $this->sites->add($site);
-            $site->addModel($this);
+            $site->addFinish($this);
         }
 
         return $this;
@@ -164,12 +142,11 @@ class Model
     public function removeSite(Site $site): static
     {
         if ($this->sites->removeElement($site)) {
-            $site->removeModel($this);
+            $site->removeFinish($this);
         }
 
         return $this;
     }
-
 
 
 }

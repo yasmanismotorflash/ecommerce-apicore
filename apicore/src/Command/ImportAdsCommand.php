@@ -1,8 +1,6 @@
 <?php
 namespace App\Command;
 
-use App\Entity\Advertisement;
-use App\Services\Comun\SimpleLog;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -10,21 +8,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Dealer;
-use App\Entity\Site;
-use App\Entity\Shop;
-
-use App\Entity\Make;
-use App\Entity\Model;
-use App\Entity\Version;
+use App\Services\Comun\SimpleLog;
 
 use App\Services\Import\Motorflash\APIMF\APIMFClient;
 use App\Services\Import\Motorflash\APIMF\Transform\AdvertisementBuilder;
-use App\Services\Import\Motorflash\APIMF\Transform\DealerBuilder;
-use App\Services\Import\Motorflash\APIMF\Transform\ShopBuilder;
-use App\Services\Import\Motorflash\APIMF\Transform\ImageBuilder;
-use App\Services\Import\Motorflash\APIMF\Transform\VideoBuilder;
-
+use App\Entity\Site;
+use App\Entity\Advertisement;
 
 #[AsCommand(name: 'apicore:import:ads', description: 'Importar anuncios de sitios')]
 class ImportAdsCommand extends Command
@@ -36,6 +25,7 @@ class ImportAdsCommand extends Command
     private bool $dryrun;
     private SimpleLog $log;
     private SymfonyStyle $io;
+
 
     public function __construct(SimpleLog $log, EntityManagerInterface $entityManager, APIMFClient $apiMFClient)
     {
@@ -51,11 +41,11 @@ class ImportAdsCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Importa anuncios desde APIMF para sitios activos, parámetros opcionales  dryrun, siteMfId, pageSize, pagesCount')
-            ->addOption('dryrun', null, InputOption::VALUE_NONE,'Si se especifica, el comando ejecutará en modo de prueba sin persistir datos en la base de datos')
-            ->addOption('siteMfId', null, InputOption::VALUE_OPTIONAL,'Especifica el mfid de un sitio en particular para importar solo sus anuncios', null)
-            ->addOption('pageSize', null, InputOption::VALUE_OPTIONAL,'Número de anuncios a traer por página', 40)
-            ->addOption('pagesCount', null, InputOption::VALUE_OPTIONAL,'Número de página a procesar', 0);
+          ->setDescription('Importa anuncios desde APIMF para sitios activos, parámetros opcionales  dryrun, siteMfId, pageSize, pagesCount')
+          ->addOption('dryrun', null, InputOption::VALUE_NONE,'Si se especifica, el comando ejecutará en modo de prueba sin persistir datos en la base de datos')
+          ->addOption('siteMfId', null, InputOption::VALUE_OPTIONAL,'Especifica el mfid de un sitio en particular para importar solo sus anuncios', null)
+          ->addOption('pageSize', null, InputOption::VALUE_OPTIONAL,'Número de anuncios a traer por página', 40)
+          ->addOption('pagesCount', null, InputOption::VALUE_OPTIONAL,'Número de página a procesar', 0);
     }
 
 
@@ -96,7 +86,6 @@ class ImportAdsCommand extends Command
     {
         ini_set('memory_limit', '-1');
 
-
         // Configurar inicializar autenticación de apimfclient para el sitio especificado
         $this->initializeAPIMFClient($site);
         $this->io->section("Obteniendo anuncios de sitio: {$site->getName()} ...");
@@ -133,7 +122,7 @@ class ImportAdsCommand extends Command
 
                     $this->io->text(" > Procesado Anuncio ID : ".$advertisement->getMfid());
                 }
-                catch (Exception $e) {
+                catch (\Exception $e) {
                     $this->io->error(" > Error procesando anuncio : ".$e->getMessage());
                     $this->io->error(" > Traza del error : ".$e->getTrace());
                     continue;
@@ -143,13 +132,15 @@ class ImportAdsCommand extends Command
             $this->io->section("Procesada página: " . $page . " de " . $pages);
 
             if($pagesCount != 0 && $pagesCount == $page){
-                $this->io->success("No se procesan más páginas, se llegó a la cantidad de paginas especificadas para obtener.  pagesCount = ".$page);
+                $this->io->success("No se procesan más páginas, se llegó a la cantidad de páginas especificadas para obtener.  pagesCount = ".$page);
                 break;
             }
             $page++;
         } while ($page <= $pages);
         $this->io->success("Procesados " . count($ads) . " anuncios para el sitio {$site->getName()}.");
     }
+
+
 
     /**
      * @param Site $site

@@ -22,6 +22,24 @@ class Version
     #[ORM\Column(type: 'string', name: 'name',length: 200, options: ["comment" => "Campo nombre visible de la version"])]
     private string $name;
 
+    /**
+     * @var Collection<int, Advertisement>
+     */
+    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'version')]
+    private Collection $advertisements;
+
+    /**
+     * @var Collection<int, Site>
+     */
+    #[ORM\ManyToMany(targetEntity: Site::class, mappedBy: 'versions')]
+    private Collection $sites;
+
+    public function __construct()
+    {
+        $this->advertisements = new ArrayCollection();
+        $this->sites = new ArrayCollection();
+    }
+
 
 
     /**
@@ -71,6 +89,63 @@ class Version
     public function __toString():string
     {
         return $this->name;
+    }
+
+    /**
+     * @return Collection<int, Advertisement>
+     */
+    public function getAdvertisements(): Collection
+    {
+        return $this->advertisements;
+    }
+
+    public function addAdvertisement(Advertisement $advertisement): static
+    {
+        if (!$this->advertisements->contains($advertisement)) {
+            $this->advertisements->add($advertisement);
+            $advertisement->setVersion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAdvertisement(Advertisement $advertisement): static
+    {
+        if ($this->advertisements->removeElement($advertisement)) {
+            // set the owning side to null (unless already changed)
+            if ($advertisement->getVersion() === $this) {
+                $advertisement->setVersion(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Site>
+     */
+    public function getSites(): Collection
+    {
+        return $this->sites;
+    }
+
+    public function addSite(Site $site): static
+    {
+        if (!$this->sites->contains($site)) {
+            $this->sites->add($site);
+            $site->addVersion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSite(Site $site): static
+    {
+        if ($this->sites->removeElement($site)) {
+            $site->removeVersion($this);
+        }
+
+        return $this;
     }
 
 

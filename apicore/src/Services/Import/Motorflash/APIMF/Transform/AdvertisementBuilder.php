@@ -4,9 +4,11 @@ namespace App\Services\Import\Motorflash\APIMF\Transform;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Site;
 use App\Entity\Advertisement;
+use App\Entity\Make;
+use App\Entity\Model;
+use App\Entity\Version;
 use App\Entity\Dealer;
 use App\Entity\Shop;
-
 
 class AdvertisementBuilder
 {
@@ -35,15 +37,40 @@ class AdvertisementBuilder
     static function updateAdvertisement(EntityManagerInterface $em, Site $site, Advertisement $advertisement, ?array $data): ?Advertisement {
         if(AdvertisementBuilder::validateArray($data)) {
             // ToDo: Actualizar entidad con todos los datos disponibles en el arreglo y llenar el registro de cmabios
+
+            $advertisement->addSite($site);
+
             if(isset($data['id'])) { $advertisement->setMfid($data['id']);}
             if(isset($data['published'])) { $advertisement->setPublished($data['published']);}
+            if(isset($data['daysPublished'])) { $advertisement->setDaysPublished($data['daysPublished']);}
             if(isset($data['available'])) { $advertisement->setAvailable($data['available']);}
 
+            $dealer = DealerBuilder::getDealer($em,$site, $data['dealer']);
+            $advertisement->setDealer($dealer);
+
+            $shop = ShopBuilder::getShop($em,$site, $dealer, $data['shop']);
+            $advertisement->setShop($shop);
+
             if(isset($data['name'])) { $advertisement->setName($data['name']);}
-            if(isset($data['make'])) { $advertisement->setMake($data['make']);}
-            if(isset($data['model'])) { $advertisement->setModel($data['model']);}
-            if(isset($data['version'])) { $advertisement->setVersion($data['version']);}
-            if(isset($data['finish'])) { $advertisement->setFinish($data['finish']);}
+
+            $make = MakeBuilder::getMake($em,$site, $data['make']);
+            $advertisement->setMake($make);
+
+            $model = ModelBuilder::getModel($em,$site, $make, $data['model']);
+            $advertisement->setModel($model);
+
+            $version = VersionBuilder::getVersion($em, $site, $model, $data['version']);
+            $advertisement->setVersion($version);
+
+            $finish = FinishBuilder::getFinish($em, $site, $model, $data['finish']);
+            $advertisement->setFinish($finish);
+
+            $images = ImageBuilder::loadImages($em, $data['images']);
+            $advertisement->setImages($images);
+
+            $video = VideoBuilder::createVideo($em, $data['video']);
+            $advertisement->setVideo($video);
+
 
             if(isset($data['vin'])) { $advertisement->setVin($data['vin']);}
             if(isset($data['plate'])) { $advertisement->setPlate($data['plate']);}
@@ -51,22 +78,11 @@ class AdvertisementBuilder
 
             // ToDo: faltan algunos campos fecha
 
-            if(isset($data['daysPublished'])) { $advertisement->setDaysPublished($data['daysPublished']);}
             if(isset($data['jato'])) { $advertisement->setJato($data['jato']);}
             if(isset($data['typnatcode'])) { $advertisement->setTypnatcode($data['typnatcode']);}
             if(isset($data['internalRef'])) { $advertisement->setInternalRef($data['internalRef']);}
             if(isset($data['origen'])) { $advertisement->setOrigen($data['origen']);}
 
-            //if(isset($data['dealer'])) {
-            $dealer = DealerBuilder::getDealer($em,$site, $data['dealer']);
-            $advertisement->setDealer($dealer);
-            //}
-
-            //if(isset($data['shop'])) {
-            $shop = ShopBuilder::getShop($em,$site, $dealer, $data['shop']);
-            //$shop->setDealer($dealer);
-            $advertisement->setShop($shop);
-            //}
 
             //if(isset($data['images'])) { $entity->setImages($data['images']);}
 
@@ -98,9 +114,7 @@ class AdvertisementBuilder
             if(isset($data['warrantyDuration'])) { $advertisement->setWarrantyDuration(intval($data['warrantyDuration']));}
 
             //  ToDo: Validar si el anuncio está en el sitio especificado, si no está agregarlo
-            //$adverteisement->addSite($site);
 
-            $em->persist($advertisement);
             return $advertisement;
         }
         // ToDo: Mostrar error en pantalla y log , pasar el output
@@ -115,15 +129,36 @@ class AdvertisementBuilder
 
              $advertisement = new Advertisement();
 
+             $advertisement->addSite($site);
+
              if(isset($data['id'])) { $advertisement->setMfid($data['id']);}
              if(isset($data['published'])) { $advertisement->setPublished($data['published']);}
+             if(isset($data['daysPublished'])) { $advertisement->setDaysPublished($data['daysPublished']);}
              if(isset($data['available'])) { $advertisement->setAvailable($data['available']);}
 
+             $dealer = DealerBuilder::getDealer($em,$site, $data['dealer']);
+             $advertisement->setDealer($dealer);
+
+             $shop = ShopBuilder::getShop($em,$site, $dealer, $data['shop']);
+             $advertisement->setShop($shop);
+
              if(isset($data['name'])) { $advertisement->setName($data['name']);}
-             if(isset($data['make'])) { $advertisement->setMake($data['make']);}
-             if(isset($data['model'])) { $advertisement->setModel($data['model']);}
-             if(isset($data['version'])) { $advertisement->setVersion($data['version']);}
-             if(isset($data['finish'])) { $advertisement->setFinish($data['finish']);}
+
+             $make = MakeBuilder::getMake($em,$site, $data['make']);
+             $advertisement->setMake($make);
+
+             $model = ModelBuilder::getModel($em,$site, $make, $data['model']);
+             $advertisement->setModel($model);
+
+             $version = VersionBuilder::getVersion($em, $site, $model, $data['version']);
+             $advertisement->setVersion($version);
+
+             $finish = FinishBuilder::getFinish($em, $site, $model, $data['finish']);
+             $advertisement->setFinish($finish);
+
+             $images = ImageBuilder::loadImages($em, $data['images']);
+             $advertisement->setImages($images);
+
 
              if(isset($data['vin'])) { $advertisement->setVin($data['vin']);}
              if(isset($data['plate'])) { $advertisement->setPlate($data['plate']);}
@@ -131,24 +166,14 @@ class AdvertisementBuilder
 
              // ToDo: faltan algunos campos fecha
 
-             if(isset($data['daysPublished'])) { $advertisement->setDaysPublished($data['daysPublished']);}
+
              if(isset($data['jato'])) { $advertisement->setJato($data['jato']);}
              if(isset($data['typnatcode'])) { $advertisement->setTypnatcode($data['typnatcode']);}
              if(isset($data['internalRef'])) { $advertisement->setInternalRef($data['internalRef']);}
              if(isset($data['origen'])) { $advertisement->setOrigen($data['origen']);}
 
-             //if(isset($data['dealer'])) {
-                 $dealer = DealerBuilder::getDealer($em,$site, $data['dealer']);
-                 $advertisement->setDealer($dealer);
-             //}
 
-             //if(isset($data['shop'])) {
-                 $shop = ShopBuilder::getShop($em,$site, $dealer, $data['shop']);
-                 //$shop->setDealer($dealer);
-                 $advertisement->setShop($shop);
-             //}
 
-             //if(isset($data['images'])) { $entity->setImages($data['images']);}
 
              if(isset($data['status'])) { $advertisement->setStatus($data['status']);}
              if(isset($data['typeVehicle'])) { $advertisement->setTypeVehicle($data['typeVehicle']);}
@@ -178,7 +203,6 @@ class AdvertisementBuilder
              if(isset($data['warrantyDuration'])) { $advertisement->setWarrantyDuration(intval($data['warrantyDuration']));}
 
              //  ToDo: Validar si el anuncio está en el sitio especificado, si no está agregarlo
-             //$adverteisement->addSite($site);
 
              $em->persist($advertisement);
              return $advertisement;

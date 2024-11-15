@@ -39,20 +39,8 @@ class Advertisement
     #[ORM\Column(type: 'string', length: 100)]
     private string $name;
 
-    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
-    #[ORM\Column(type: 'string', length: 50)]
-    private string $make;
 
-    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
-    #[ORM\Column(type: 'string', length: 50)]
-    private string $model;
 
-    #[ApiFilter(SearchFilter::class, strategy: 'partial')]
-    #[ORM\Column(type: 'string', length: 50)]
-    private string $version;
-
-    #[ORM\Column(type: 'string', length: 100)]
-    private string $finish;
 
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 17)]
@@ -213,11 +201,41 @@ class Advertisement
     #[ORM\JoinColumn(nullable: false)]
     private ?Shop $shop = null;
 
+    /**
+     * @var Collection<int, Site>
+     */
+    #[ORM\ManyToMany(targetEntity: Site::class, mappedBy: 'advertisements')]
+    private Collection $sites;
+
+    #[ORM\ManyToOne(inversedBy: 'advertisements')]
+    private ?Make $make = null;
+
+    #[ORM\ManyToOne(inversedBy: 'advertisements')]
+    private ?Model $model = null;
+
+    #[ORM\ManyToOne(inversedBy: 'advertisements')]
+    private ?Version $version = null;
 
 
+    #[ORM\ManyToOne(inversedBy: 'advertisements')]
+    private ?Finish $finish = null;
+
+    /**
+     * @var Collection<int, Image>
+     */
+    #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'advertisement', cascade: ['persist', 'remove'])]
+    private Collection $images;
+
+    #[ORM\OneToOne(inversedBy: 'advertisement', cascade: ['persist', 'remove'])]
+    private ?Video $video = null;
 
 
+    public function __construct()
+    {
+        $this->sites = new ArrayCollection();
+        $this->images = new ArrayCollection();
 
+    }
 
 
     public function getId(): ?int
@@ -269,49 +287,7 @@ class Advertisement
         return $this;
     }
 
-    public function getMake(): string
-    {
-        return $this->make;
-    }
 
-    public function setMake(string $make): Advertisement
-    {
-        $this->make = $make;
-        return $this;
-    }
-
-    public function getModel(): string
-    {
-        return $this->model;
-    }
-
-    public function setModel(string $model): Advertisement
-    {
-        $this->model = $model;
-        return $this;
-    }
-
-    public function getVersion(): string
-    {
-        return $this->version;
-    }
-
-    public function setVersion(string $version): Advertisement
-    {
-        $this->version = $version;
-        return $this;
-    }
-
-    public function getFinish(): string
-    {
-        return $this->finish;
-    }
-
-    public function setFinish(string $finish): Advertisement
-    {
-        $this->finish = $finish;
-        return $this;
-    }
 
     public function getVin(): string
     {
@@ -786,6 +762,135 @@ class Advertisement
         return 'Anuncio: '.$this->mfid.' Marca: '.$this->make.' Modelo: '.$this->model.' Version: '.$this->version;
     }*/
 
+    /**
+     * @return Collection<int, Site>
+     */
+    public function getSites(): Collection
+    {
+        return $this->sites;
+    }
+
+    public function addSite(Site $site): static
+    {
+        if (!$this->sites->contains($site)) {
+            $this->sites->add($site);
+            $site->addAdvertisement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSite(Site $site): static
+    {
+        if ($this->sites->removeElement($site)) {
+            $site->removeAdvertisement($this);
+        }
+
+        return $this;
+    }
+
+    public function getMake(): ?Make
+    {
+        return $this->make;
+    }
+
+    public function setMake(?Make $make): static
+    {
+        $this->make = $make;
+
+        return $this;
+    }
+
+    public function getModel(): ?Model
+    {
+        return $this->model;
+    }
+
+    public function setModel(?Model $model): static
+    {
+        $this->model = $model;
+
+        return $this;
+    }
+
+    public function getVersion(): ?Version
+    {
+        return $this->version;
+    }
+
+    public function setVersion(?Version $version): static
+    {
+        $this->version = $version;
+        return $this;
+    }
+
+
+    public function getFinish(): Finish
+    {
+        return $this->finish;
+    }
+
+    public function setFinish(Finish $finish): Advertisement
+    {
+        $this->finish = $finish;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Image>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function setImages(array $images): static
+    {
+        $imagesList = $this->images;
+        foreach ($imagesList as $img){
+            $this->removeImage($img);
+        }
+
+        foreach ($images as $image){
+            $this->addImage($image);
+        }
+        return $this;
+    }
+
+
+    public function addImage(Image $image): static
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setAdvertisement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): static
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getAdvertisement() === $this) {
+                $image->setAdvertisement(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getVideo(): ?Video
+    {
+        return $this->video;
+    }
+
+    public function setVideo(?Video $video): static
+    {
+        $this->video = $video;
+
+        return $this;
+    }
 
 
 

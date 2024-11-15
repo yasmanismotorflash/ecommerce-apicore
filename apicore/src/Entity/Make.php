@@ -21,12 +21,26 @@ class Make
     #[ORM\OneToMany(targetEntity: Model::class, mappedBy: 'make')]
     private Collection $models;
 
+    /**
+     * @var Collection<int, Site>
+     */
+    #[ORM\ManyToMany(targetEntity: Site::class, mappedBy: 'makes')]
+    private Collection $sites;
+
+    /**
+     * @var Collection<int, Advertisement>
+     */
+    #[ORM\OneToMany(targetEntity: Advertisement::class, mappedBy: 'make')]
+    private Collection $advertisements;
+
 
 
 
     public function __construct()
     {
+        $this->sites = new ArrayCollection();
         $this->models = new ArrayCollection();
+        $this->advertisements = new ArrayCollection();
     }
 
     /**
@@ -70,6 +84,63 @@ class Make
     public function __toString():string
     {
         return $this->name;
+    }
+
+    /**
+     * @return Collection<int, Site>
+     */
+    public function getSites(): Collection
+    {
+        return $this->sites;
+    }
+
+    public function addSite(Site $site): static
+    {
+        if (!$this->sites->contains($site)) {
+            $this->sites->add($site);
+            $site->addMake($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSite(Site $site): static
+    {
+        if ($this->sites->removeElement($site)) {
+            $site->removeMake($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Advertisement>
+     */
+    public function getAdvertisements(): Collection
+    {
+        return $this->advertisements;
+    }
+
+    public function addAdvertisement(Advertisement $advertisement): static
+    {
+        if (!$this->advertisements->contains($advertisement)) {
+            $this->advertisements->add($advertisement);
+            $advertisement->setMake($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAdvertisement(Advertisement $advertisement): static
+    {
+        if ($this->advertisements->removeElement($advertisement)) {
+            // set the owning side to null (unless already changed)
+            if ($advertisement->getMake() === $this) {
+                $advertisement->setMake(null);
+            }
+        }
+
+        return $this;
     }
 
 

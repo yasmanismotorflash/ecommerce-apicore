@@ -45,6 +45,64 @@ class Site
 
 
 
+    /**
+     * @var Collection<int, Dealer>
+     */
+    #[ORM\ManyToMany(targetEntity: Dealer::class, inversedBy: 'sites')]
+    private Collection $dealers;
+
+    /**
+     * @var Collection<int, Make>
+     */
+    #[ORM\ManyToMany(targetEntity: Make::class, inversedBy: 'sites')]
+    private Collection $makes;
+
+    /**
+     * @var Collection<int, Shop>
+     */
+    #[ORM\ManyToMany(targetEntity: Shop::class, inversedBy: 'sites')]
+    private Collection $shops;
+
+    /**
+     * @var Collection<int, Model>
+     */
+    #[ORM\ManyToMany(targetEntity: Model::class, inversedBy: 'sites')]
+    private Collection $models;
+
+
+    /**
+     * @var Collection<int, Advertisement>
+     */
+    #[ORM\ManyToMany(targetEntity: Advertisement::class, inversedBy: 'sites')]
+    private Collection $advertisements;
+
+    /**
+     * @var Collection<int, Version>
+     */
+    #[ORM\ManyToMany(targetEntity: Version::class, inversedBy: 'sites')]
+    private Collection $versions;
+
+    /**
+     * @var Collection<int, Finish>
+     */
+    #[ORM\ManyToMany(targetEntity: Finish::class, inversedBy: 'sites2')]
+    private Collection $finishs;
+
+
+    public function __construct()
+    {
+        $this->dealers = new ArrayCollection();
+        $this->shops = new ArrayCollection();
+        $this->makes = new ArrayCollection();
+        $this->models = new ArrayCollection();
+        $this->versions = new ArrayCollection();
+
+        $this->advertisements = new ArrayCollection();
+        $this->finishs = new ArrayCollection();
+    }
+
+
+
 
     public function getId(): ?int
     {
@@ -139,6 +197,174 @@ class Site
     public function setActive(bool $active): static
     {
         $this->active = $active;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Advertisement>
+     */
+    public function getAdvertisements(): Collection
+    {
+        return $this->advertisements;
+    }
+
+    public function addAdvertisement(Advertisement $advertisement): static
+    {
+        if (!$this->advertisements->contains($advertisement)) {
+            $this->advertisements->add($advertisement);
+        }
+
+        return $this;
+    }
+
+    public function removeAdvertisement(Advertisement $advertisement): static
+    {
+        $this->advertisements->removeElement($advertisement);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dealer>
+     */
+    public function getDealers(): Collection
+    {
+        return $this->dealers;
+    }
+
+    public function addDealer(Dealer $dealer): static
+    {
+        if (!$this->dealers->contains($dealer)) {
+            $this->dealers->add($dealer);
+        }
+
+        return $this;
+    }
+
+    public function removeDealer(Dealer $dealer): static
+    {
+        $this->dealers->removeElement($dealer);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Make>
+     */
+    public function getMakes(): Collection
+    {
+        return $this->makes;
+    }
+
+    public function addMake(Make $make): static
+    {
+        if (!$this->makes->contains($make)) {
+            $this->makes->add($make);
+        }
+
+        return $this;
+    }
+
+    public function removeMake(Make $make): static
+    {
+        $this->makes->removeElement($make);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Shop>
+     */
+    public function getShops(): Collection
+    {
+        return $this->shops;
+    }
+
+    public function addShop(Shop $shop): static
+    {
+        if (!$this->shops->contains($shop)) {
+            $this->shops->add($shop);
+        }
+
+        return $this;
+    }
+
+    public function removeShop(Shop $shop): static
+    {
+        $this->shops->removeElement($shop);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Model>
+     */
+    public function getModels(): Collection
+    {
+        return $this->models;
+    }
+
+    public function addModel(Model $model): static
+    {
+        if (!$this->models->contains($model)) {
+            $this->models->add($model);
+        }
+
+        return $this;
+    }
+
+    public function removeModel(Model $model): static
+    {
+        $this->models->removeElement($model);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Version>
+     */
+    public function getVersions(): Collection
+    {
+        return $this->versions;
+    }
+
+    public function addVersion(Version $version): static
+    {
+        if (!$this->versions->contains($version)) {
+            $this->versions->add($version);
+        }
+
+        return $this;
+    }
+
+    public function removeVersion(Version $version): static
+    {
+        $this->versions->removeElement($version);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Finish>
+     */
+    public function getFinishs(): Collection
+    {
+        return $this->finishs;
+    }
+
+    public function addFinish(Finish $finish): static
+    {
+        if (!$this->finishs->contains($finish)) {
+            $this->finishs->add($finish);
+        }
+
+        return $this;
+    }
+
+    public function removeFinish(Finish $finish): static
+    {
+        $this->finishs->removeElement($finish);
+
         return $this;
     }
 
