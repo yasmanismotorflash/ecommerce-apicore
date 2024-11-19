@@ -6,6 +6,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+
+
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
@@ -14,8 +18,22 @@ use ApiPlatform\Serializer\Filter\PropertyFilter;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'advertisements', options: ["comment" => "Tabla para almacenar los anuncios"])]
-#[ApiResource( paginationItemsPerPage: 40)]
 #[ApiFilter(PropertyFilter::class)]
+
+#[ApiResource(
+    description: 'Entidad para manejar la información.',
+    operations: [
+        new Get(),
+        new GetCollection()
+    ],
+    paginationItemsPerPage: 40
+
+)]
+
+
+
+
+
 class Advertisement
 {
     #[ORM\Id]
@@ -29,8 +47,6 @@ class Advertisement
     #[ORM\Column(type: 'integer', name: 'mfid', options: ["comment" => "Campo mfid, contiene el id usado en motorflash"])]
     private int $mfid;
 
-    #[ORM\Column(type: 'string', length: 20)]
-    private string $published;
 
     #[ORM\Column(type: 'string', length: 50)]
     private string $available;

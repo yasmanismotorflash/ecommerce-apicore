@@ -4,10 +4,20 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\VideoRepository;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 
 #[ORM\Entity(repositoryClass: VideoRepository::class)]
 #[ORM\Table(name: 'videos', options: ["comment" => "Tabla para almacenar los videos de los anuncios"])]
-#[ApiResource]
+#[ApiResource(
+    description: 'Entidad para manejar la información del video.',
+    operations: [
+        new Get(),
+        new GetCollection()
+    ],
+    paginationItemsPerPage: 40
+
+)]
 class Video
 {
     #[ORM\Id]

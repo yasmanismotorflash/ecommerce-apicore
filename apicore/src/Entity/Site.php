@@ -8,10 +8,22 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+
+
 
 #[ORM\Entity(repositoryClass: SiteRepository::class)]
 #[ORM\Table(name: 'sites')]
-#[ApiResource]
+#[ApiResource(
+    description: 'Entidad para manejar la información de sitio',
+    operations: [
+        new Get(),
+        new GetCollection()
+    ],
+    paginationItemsPerPage: 40
+
+)]
 class Site
 {
     #[ORM\Id]

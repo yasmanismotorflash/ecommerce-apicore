@@ -5,10 +5,20 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'dealers', options: ["comment" => "Tabla para almacenar dealers (Concesionarios)"])]
-#[ApiResource]
+#[ApiResource(
+    description: 'Entidad para manejar la información de los dealers (Concesionarios)',
+    operations: [
+        new Get(),
+        new GetCollection()
+    ],
+    paginationItemsPerPage: 40
+
+)]
 class Dealer
 {
     #[ORM\Id]

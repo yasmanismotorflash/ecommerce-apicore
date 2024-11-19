@@ -4,10 +4,20 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ImageRepository;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
 #[ORM\Table(name: 'images', options: ["comment" => "Tabla para almacenar las imágenes de los anuncios"])]
-#[ApiResource]
+#[ApiResource(
+    description: 'Entidad para manejar la información de la imagen.',
+    operations: [
+        new Get(),
+        new GetCollection()
+    ],
+    paginationItemsPerPage: 40
+
+)]
 class Image
 {
     #[ORM\Id]
