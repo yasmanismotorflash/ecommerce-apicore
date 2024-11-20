@@ -158,10 +158,10 @@ class APIMFClient
      * @param string $page pagina solicitada
      * @return string (json)
      */
-    public function getAdsByPage(int $perPage = 40, int $page = 1): ?string
+    public function getAdsByPage(int $perPage = 40, int $page = 1,int $mfsiteId): ?string
     {
         $this->ensureToken();
-        $endpoint = $this->apiMfUrl . '/api/advertisements?perPage=' . $perPage . '&page=' . $page;
+        $endpoint = $this->apiMfUrl . '/api/advertisements?perPage=' . $perPage . '&page=' . $page. '&autorized='.$mfsiteId;
         return $this->httpClient->request('GET', $endpoint, ['headers' => ['Authorization' => ' Bearer ' . $this->token]])->getContent();
     }
 

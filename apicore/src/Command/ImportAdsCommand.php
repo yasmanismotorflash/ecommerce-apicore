@@ -95,7 +95,7 @@ class ImportAdsCommand extends Command
         // ToDo: Separar en funciones atómicas
 
         do {
-            $response = $this->apiMFClient->getAdsByPage($pageSize, $page);
+            $response = $this->apiMFClient->getAdsByPage($pageSize, $page, $site->getMfSiteId());
             $responseData = json_decode($response, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {

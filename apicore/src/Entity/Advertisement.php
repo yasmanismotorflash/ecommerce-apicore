@@ -9,7 +9,6 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 
-
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;

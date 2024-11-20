@@ -17,12 +17,8 @@ use ApiPlatform\Metadata\GetCollection;
 #[ORM\Table(name: 'sites')]
 #[ApiResource(
     description: 'Entidad para manejar la información de sitio',
-    operations: [
-        new Get(),
-        new GetCollection()
-    ],
+    operations: [new Get(),new GetCollection()],
     paginationItemsPerPage: 40
-
 )]
 class Site
 {
@@ -54,8 +50,6 @@ class Site
 
     #[ORM\Column]
     private ?bool $active = null;
-
-
 
     /**
      * @var Collection<int, Dealer>
@@ -97,7 +91,7 @@ class Site
     /**
      * @var Collection<int, Finish>
      */
-    #[ORM\ManyToMany(targetEntity: Finish::class, inversedBy: 'sites2')]
+    #[ORM\ManyToMany(targetEntity: Finish::class, inversedBy: 'sites')]
     private Collection $finishs;
 
 
@@ -112,8 +106,6 @@ class Site
         $this->advertisements = new ArrayCollection();
         $this->finishs = new ArrayCollection();
     }
-
-
 
 
     public function getId(): ?int
