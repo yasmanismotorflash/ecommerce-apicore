@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\ApiProperty;
 
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
@@ -206,8 +207,12 @@ class Advertisement
     private ?string $textLegal = null;
 
 
+    /**
+     * @ApiProperty(readableLink=true)
+     */
     #[ORM\ManyToOne(inversedBy: 'advertisements', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
+
     private ?Dealer $dealer = null;
 
     #[ORM\ManyToOne(inversedBy: 'advertisements', cascade: ['persist'])]
