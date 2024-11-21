@@ -46,6 +46,8 @@ class Advertisement
     #[ORM\Column(type: 'integer', name: 'mfid', options: ["comment" => "Campo mfid, contiene el id usado en motorflash"])]
     private int $mfid;
 
+    #[ORM\Column(type: 'string', length: 10)]
+    private string $published;
 
     #[ORM\Column(type: 'string', length: 50)]
     private string $available;
@@ -53,8 +55,6 @@ class Advertisement
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 100)]
     private string $name;
-
-
 
 
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
@@ -101,8 +101,6 @@ class Advertisement
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private ?string $origen;
-
-
 
 
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
