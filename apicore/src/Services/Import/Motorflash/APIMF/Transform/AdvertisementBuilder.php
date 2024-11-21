@@ -41,6 +41,7 @@ class AdvertisementBuilder
             $advertisement->addSite($site);
 
             if(isset($data['id'])) { $advertisement->setMfid($data['id']);}
+            if(isset($data['published'])) { $advertisement->setPublished($data['published']);}
             if(isset($data['daysPublished'])) { $advertisement->setDaysPublished($data['daysPublished']);}
             if(isset($data['available'])) { $advertisement->setAvailable($data['available']);}
 
@@ -131,6 +132,7 @@ class AdvertisementBuilder
              $advertisement->addSite($site);
 
              if(isset($data['id'])) { $advertisement->setMfid($data['id']);}
+             if(isset($data['published'])) { $advertisement->setPublished($data['published']);}
              if(isset($data['daysPublished'])) { $advertisement->setDaysPublished($data['daysPublished']);}
              if(isset($data['available'])) { $advertisement->setAvailable($data['available']);}
 
