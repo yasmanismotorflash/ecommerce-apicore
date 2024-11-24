@@ -12,17 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: CredentialRepository::class)]
 #[ORM\Table(name: 'credentials', options: ["comment" => "Tabla para almacenar las credenciales de acceso a APICORE"])]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-#[ApiResource(
-
-    normalizationContext:[
-        'groups'=>[ 'user:read'   ]
-    ],
-    denormalizationContext:[
-        'groups'=>[ 'user:write'  ]
-    ],
-
-)]
-
+#[ApiResource( normalizationContext:[ 'groups'=>['user:read']],denormalizationContext:['groups'=>['user:write']],)]
 class Credential implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -57,7 +47,6 @@ class Credential implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:read','user:write'])]
     #[ORM\Column(length: 80, unique: true, nullable: false, name: 'username', options: ["comment" => "Campo username para almecenar el nombre del usuario de la credencial"])]
     private ?string $username = null;
-
 
 
     public function getId(): ?int

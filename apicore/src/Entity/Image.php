@@ -6,6 +6,7 @@ use App\Repository\ImageRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: ImageRepository::class)]
 #[ORM\Table(name: 'images', options: ["comment" => "Tabla para almacenar las imágenes de los anuncios"])]
@@ -20,11 +21,13 @@ use ApiPlatform\Metadata\GetCollection;
 )]
 class Image
 {
+    #[Groups('ads:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', name: 'url',length: 300, options: ["comment" => "Campo url de la imágen"])]
     private ?string $url = null;
 

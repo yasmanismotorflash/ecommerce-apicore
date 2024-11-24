@@ -6,6 +6,7 @@ use App\Repository\VideoRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: VideoRepository::class)]
 #[ORM\Table(name: 'videos', options: ["comment" => "Tabla para almacenar los videos de los anuncios"])]
@@ -20,11 +21,13 @@ use ApiPlatform\Metadata\GetCollection;
 )]
 class Video
 {
+    #[Groups('ads:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', name: 'url',length: 300, options: ["comment" => "Campo url del video"])]
     private ?string $url = null;
 

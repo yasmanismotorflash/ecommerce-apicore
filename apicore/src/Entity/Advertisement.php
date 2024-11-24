@@ -15,6 +15,7 @@ use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Serializer\Filter\PropertyFilter;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'advertisements', options: ["comment" => "Tabla para almacenar los anuncios"])]
@@ -22,16 +23,11 @@ use ApiPlatform\Serializer\Filter\PropertyFilter;
 
 #[ApiResource(
     description: 'Entidad para manejar la información.',
-    operations: [
-        new Get(),
-        new GetCollection()
-    ],
+    operations: [ new Get(), new GetCollection() ],
+
+   normalizationContext:[ 'groups'=>['ads:read']],
     paginationItemsPerPage: 40
-
 )]
-
-
-
 
 
 class Advertisement
@@ -39,213 +35,265 @@ class Advertisement
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups('ads:read')]
     private ?int $id = null;
 
     /**
      * ID de anuncio de Motorflash
      * */
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'integer', name: 'mfid', options: ["comment" => "Campo mfid, contiene el id usado en motorflash"])]
     private int $mfid;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', length: 10)]
     private string $published;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $available;
 
+    #[Groups('ads:read')]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 100)]
     private string $name;
 
 
+    #[Groups('ads:read')]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 17)]
     private string $vin;
 
+    #[Groups('ads:read')]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 20)]
     private string $plate;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'date', nullable: true)]
     private ?\DateTimeInterface $registrationDate;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $lastRegistrationDate;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $manufacturingDate;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $publicationDate;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $modificationDate;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $lastUpdate;
 
+    #[Groups('ads:read')]
     #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'integer')]
     private int $daysPublished;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', length: 20)]
     private string $jato;
 
+    #[Groups('ads:read')]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 20)]
     private string $typnatcode;
 
+    #[Groups('ads:read')]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $internalRef;
 
+    #[Groups('ads:read')]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private ?string $origen;
 
 
+    #[Groups('ads:read')]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $status;
 
+    #[Groups('ads:read')]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $typeVehicle;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $bodyType;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $bodyTypeEs;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'boolean')]
     private bool $iva;
 
+    #[Groups('ads:read')]
     #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private string $price;
 
+    #[Groups('ads:read')]
     #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private string $financedPrice;
 
+    #[Groups('ads:read')]
     #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private string $purchasePrice;
 
+    #[Groups('ads:read')]
     #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private string $priceNew;
 
 
+    #[Groups('ads:read')]
     #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'integer')]
     private int $km;
 
+    #[Groups('ads:read')]
     #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'string', length: 10)]
     private string $cv;
 
+    #[Groups('ads:read')]
     #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'string', length: 10)]
     private string $kw;
 
+    #[Groups('ads:read')]
     #[ApiFilter(RangeFilter::class)]
     #[ORM\Column(type: 'integer')]
     private int $cc;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $tires_front;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $tires_back;
 
 
+    #[Groups('ads:read')]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private string $fuel;
 
+    #[Groups('ads:read')]
     #[ApiFilter(SearchFilter::class, strategy: 'partial')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $color;
 
+    #[Groups('ads:read')]
     #[ApiFilter(BooleanFilter::class)]
     #[ORM\Column(type: 'boolean')]
     private bool $freeAccidents;
 
-
-
-
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private string $traction;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $gearbox;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'integer')]
     private int $number_of_gears;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'integer')]
     private int $doors;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'integer')]
     private int $seats;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', length: 50)]
     private string $environmentalBadge;
 
 
-
-
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'integer')]
     private int $warrantyDuration;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $quote = null;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $textLegal = null;
 
 
+
+    /**
+     * @var Collection<int, Site>
+     */
+    #[Groups('ads:read')]
+    #[ORM\ManyToMany(targetEntity: Site::class, mappedBy: 'advertisements')]
+    private Collection $sites;
+
     /**
      * @ApiProperty(readableLink=true)
      */
+    #[Groups('ads:read')]
     #[ORM\ManyToOne(inversedBy: 'advertisements', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
 
     private ?Dealer $dealer = null;
 
+    #[Groups('ads:read')]
     #[ORM\ManyToOne(inversedBy: 'advertisements', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Shop $shop = null;
 
-    /**
-     * @var Collection<int, Site>
-     */
-    #[ORM\ManyToMany(targetEntity: Site::class, mappedBy: 'advertisements')]
-    private Collection $sites;
 
+    #[Groups('ads:read')]
     #[ORM\ManyToOne(inversedBy: 'advertisements')]
     private ?Make $make = null;
 
+    #[Groups('ads:read')]
     #[ORM\ManyToOne(inversedBy: 'advertisements')]
     private ?Model $model = null;
 
+    #[Groups('ads:read')]
     #[ORM\ManyToOne(inversedBy: 'advertisements')]
     private ?Version $version = null;
 
 
+    #[Groups('ads:read')]
     #[ORM\ManyToOne(inversedBy: 'advertisements')]
     private ?Finish $finish = null;
+
 
     /**
      * @var Collection<int, Image>
      */
+    #[Groups('ads:read')]
     #[ORM\OneToMany(targetEntity: Image::class, mappedBy: 'advertisement', cascade: ['persist', 'remove'])]
     private Collection $images;
 
+    #[Groups('ads:read')]
     #[ORM\OneToOne(inversedBy: 'advertisement', cascade: ['persist', 'remove'])]
     private ?Video $video = null;
+
 
 
     public function __construct()

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'finishs', options: ["comment" => "Tabla para almacenar los acabados de los anuncios"])]
@@ -21,6 +22,7 @@ use ApiPlatform\Metadata\GetCollection;
 )]
 class Finish
 {
+    #[Groups('ads:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -29,6 +31,7 @@ class Finish
     #[ORM\ManyToOne(targetEntity: Model::class)]
     private Model $model;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', name: 'name',length: 50, options: ["comment" => "Campo nombre visible del acabado"])]
     private string $name;
 

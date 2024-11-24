@@ -4,18 +4,22 @@ namespace App\Entity;
 
 use App\Repository\FuelRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: FuelRepository::class)]
 class Fuel
 {
+    #[Groups('ads:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups('ads:read')]
     #[ORM\Column(length: 50)]
     private ?string $name = null;
 
+    #[Groups('ads:read')]
     #[ORM\Column]
     private ?int $mfid = null;
 

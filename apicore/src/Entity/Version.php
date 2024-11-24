@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'versions', options: ["comment" => "Tabla para almacenar las versiones de los modelos de los anuncios"])]
@@ -21,14 +22,17 @@ use ApiPlatform\Metadata\GetCollection;
 )]
 class Version
 {
+    #[Groups('ads:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private int $id;
 
+    #[Groups('ads:read')]
     #[ORM\ManyToOne(targetEntity: Model::class, inversedBy: 'versions')]
     private Model $model;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', name: 'name',length: 200, options: ["comment" => "Campo nombre visible de la version"])]
     private string $name;
 

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'models', options: ["comment" => "Tabla para almacenar los modelos de los anuncios"])]
@@ -21,14 +22,17 @@ use ApiPlatform\Metadata\GetCollection;
 )]
 class Model
 {
+    #[Groups('ads:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private int $id;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', name: 'name',length: 120, options: ["comment" => "Campo nombre visible del modelo"])]
     private string $name;
 
+    #[Groups('ads:read')]
     #[ORM\ManyToOne(targetEntity: Make::class, inversedBy: 'models')]
     private Make $make;
 

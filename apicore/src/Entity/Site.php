@@ -7,6 +7,7 @@ use App\Repository\SiteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
@@ -22,17 +23,21 @@ use ApiPlatform\Metadata\GetCollection;
 )]
 class Site
 {
+    #[Groups('ads:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups('ads:read')]
     #[ORM\Column(length: 200)]
     private ?string $name = null;
 
+    #[Groups('ads:read')]
     #[ORM\Column(length: 150)]
     private ?string $url = null;
 
+    #[Groups('ads:read')]
     #[ORM\Column]
     private ?int $mfSiteId = null;
 
@@ -48,6 +53,7 @@ class Site
     #[ORM\Column(length: 200)]
     private ?string $apicoreClientSecret = null;
 
+    #[Groups('ads:read')]
     #[ORM\Column]
     private ?bool $active = null;
 

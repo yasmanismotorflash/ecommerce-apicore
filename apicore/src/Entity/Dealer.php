@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'dealers', options: ["comment" => "Tabla para almacenar dealers (Concesionarios)"])]
@@ -21,14 +22,17 @@ use ApiPlatform\Metadata\GetCollection;
 )]
 class Dealer
 {
+    #[Groups('ads:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'integer', name: 'mfid', options: ["comment" => "Campo mfid, contiene el id usado en motorflash"])]
     private int $mfid;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', name: 'name',length: 200, options: ["comment" => "Campo nombre visible del dealer (Concesionario)"])]
     private string $name;
 

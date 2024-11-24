@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'makes', options: ["comment" => "Tabla para almacenar las marcas de los anuncios"])]
@@ -20,11 +21,13 @@ use ApiPlatform\Metadata\GetCollection;
 )]
 class Make
 {
+    #[Groups('ads:read')]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private int $id;
 
+    #[Groups('ads:read')]
     #[ORM\Column(type: 'string', name: 'name',length: 120, options: ["comment" => "Campo nombre visible de la marca"])]
     private string $name;
 
