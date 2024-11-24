@@ -17,70 +17,72 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new Get(),
         new GetCollection()
     ],
+    normalizationContext:[ 'groups'=>['shop:read']],
     paginationItemsPerPage: 40
 
 )]
 class Shop
 {
-    #[Groups('ads:read')]
+    #[Groups(['shop:read','ads:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private int $id;
 
-    #[Groups('ads:read')]
+    #[Groups(['shop:read','ads:read'])]
     #[ORM\Column(type: 'integer', name: 'mfid', options: ["comment" => "Campo mfid, contiene el id usado en motorflash"])]
     private int $mfid;
 
 
-    #[Groups('ads:read')]
+    #[Groups(['shop:read','ads:read'])]
     #[ORM\Column(type: 'integer', name: 'dealermfid', options: ["comment" => "Campo dealermfid, contiene el id del dealer usado en motorflash"])]
     private int $dealermfid;
 
-    #[Groups('ads:read')]
+    #[Groups(['shop:read','ads:read'])]
     #[ORM\Column(type: 'string', name: 'name',length: 120, options: ["comment" => "Campo nombre visible de la shop (Tienda)"])]
     private string $name;
 
-    #[Groups('ads:read')]
+    #[Groups(['shop:read','ads:read'])]
     #[ORM\Column(type: 'string', name: 'address',length: 120, options: ["comment" => "Campo dirección de la shop (Tienda)"])]
     private string $address;
 
-    #[Groups('ads:read')]
+    #[Groups(['shop:read','ads:read'])]
     #[ORM\Column(type: 'string', name: 'cp',length: 10, options: ["comment" => "Campo codigo postal de la shop (Tienda)"])]
     private string $cp;
 
-    #[Groups('ads:read')]
+    #[Groups(['shop:read','ads:read'])]
     #[ORM\Column(type: 'string', name: 'city',length: 120, options: ["comment" => "Campo ciudad de la shop (Tienda)"])]
     private string $city;
 
     #[ORM\Column(type: 'string', name: 'provinceid',length: 5, options: ["comment" => "Campo id provincia de la shop (Tienda)"])]
     private string $provinceId;
 
-    #[Groups('ads:read')]
+    #[Groups(['shop:read','ads:read'])]
     #[ORM\Column(type: 'string', name: 'province',length: 100, options: ["comment" => "Campo provincia de la shop (Tienda)"])]
     private string $province;
 
-    #[Groups('ads:read')]
+    #[Groups(['shop:read','ads:read'])]
     #[ORM\Column(type: 'string', name: 'country',length: 100, options: ["comment" => "Campo código país de la shop (Tienda)"])]
     private string $country;
 
-    #[Groups('ads:read')]
+    #[Groups(['shop:read','ads:read'])]
     #[ORM\Column(type: 'string', name: 'phone',length: 20, options: ["comment" => "Campo teléfono de la shop (Tienda)"])]
     private ?string $phone;
 
-    #[Groups('ads:read')]
+    #[Groups(['shop:read','ads:read'])]
     #[ORM\Column(type: 'string', name: 'email',length: 120, options: ["comment" => "Campo email de la shop (Tienda)"])]
     private string $email;
 
 
-    #[Groups('ads:read')]
+    #[Groups(['shop:read','ads:read'])]
     #[ORM\Column(type: 'decimal', name: 'lt', precision: 11, scale: 8, nullable: true, options: ["comment" => "Campo ubicación latitud de la shop (Tienda)"])]
     private ?string $lt;
 
-    #[Groups('ads:read')]
+    #[Groups(['shop:read','ads:read'])]
     #[ORM\Column(type: 'decimal', name: 'lng', precision: 11, scale: 8, nullable: true, options: ["comment" => "Campo ubicación longitud de la shop (Tienda)"])]
     private ?string $lng;
 
+    #[Groups(['shop:read'])]
     #[ORM\ManyToOne(inversedBy: 'shops')]
     #[ORM\JoinColumn(nullable: true)]
     private ?Dealer $dealer = null;
