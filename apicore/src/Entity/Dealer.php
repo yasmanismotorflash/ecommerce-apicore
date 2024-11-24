@@ -17,25 +17,27 @@ use Symfony\Component\Serializer\Attribute\Groups;
         new Get(),
         new GetCollection()
     ],
+    normalizationContext:[ 'groups'=>['dealer:read']],
     paginationItemsPerPage: 40
 
 )]
 class Dealer
 {
-    #[Groups('ads:read')]
+    #[Groups(['dealer:read','ads:read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[Groups('ads:read')]
+    #[Groups(['dealer:read','ads:read'])]
     #[ORM\Column(type: 'integer', name: 'mfid', options: ["comment" => "Campo mfid, contiene el id usado en motorflash"])]
     private int $mfid;
 
-    #[Groups('ads:read')]
+    #[Groups(['dealer:read','ads:read'])]
     #[ORM\Column(type: 'string', name: 'name',length: 200, options: ["comment" => "Campo nombre visible del dealer (Concesionario)"])]
     private string $name;
 
+    #[Groups(['dealer:read'])]
     #[ORM\Column(type: 'string', name: 'type',length: 200, options: ["comment" => "Campo tipo de dealer (Concesionario)"])]
     private string $type;
 
