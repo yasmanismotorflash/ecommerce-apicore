@@ -26,7 +26,9 @@ class DF02_CredentialsFixtures extends Fixture implements OrderedFixtureInterfac
 
         foreach ($credentials as $credential) {
             $newCredential = new Credential();
-            $newCredential->setEmail($credential[1])->setPassword($credential[2]);
+            $newCredential->setUsername($credential[0])
+                          ->setEmail($credential[1])
+                          ->setPassword($credential[2]);
             $manager->persist($newCredential);
         }
 
